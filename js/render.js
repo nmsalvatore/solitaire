@@ -59,8 +59,8 @@ function makeCard(card) {
 
 // ── Stack layout helpers ──────────────────────────
 
-const OFFSET_FACEDOWN = 15; // px per face-down card
-const OFFSET_FACEUP = 30; // px per face-up card
+const OFFSET_FACEDOWN = 11; // px per face-down card
+const OFFSET_FACEUP = 22; // px per face-up card
 
 function stackCards(pile, cards, selection) {
     // Clear previous contents
