@@ -30,11 +30,11 @@
   <rect x="18" y="30" width="3" height="2" fill="#2244aa"/>
 
   <!-- eyes -->
-  <rect x="11" y="14" width="2" height="2" fill="#f0e8d0"/>
-  <rect x="19" y="14" width="2" height="2" fill="#f0e8d0"/>
+  <rect x="12" y="14" width="2" height="2" fill="#f0e8d0"/>
+  <rect x="18" y="14" width="2" height="2" fill="#f0e8d0"/>
   <!-- eye shine -->
-  <rect x="11" y="14" width="1" height="1" fill="#fff"/>
-  <rect x="19" y="14" width="1" height="1" fill="#fff"/>
+  <rect x="12" y="14" width="1" height="1" fill="#fff"/>
+  <rect x="18" y="14" width="1" height="1" fill="#fff"/>
 
   <!-- arms raised up -->
   <rect x="4" y="18" width="4" height="2" fill="#2244aa"/>

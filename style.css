@@ -729,6 +729,12 @@ h1 {
     gap: var(--sp-lg);
 }
 
+#win-mascot {
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+}
+
 #win-title {
     font-size: var(--fs-modal-xl);
     color: var(--black);
