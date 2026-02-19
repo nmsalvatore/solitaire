@@ -4,15 +4,18 @@
 // { source: { type, colIndex? }, cards: Card[] }
 let selection = null;
 
-// Last card resolved by handleClick — used by handleDblClick to avoid
-// relying on e.target after the DOM has been rebuilt by redraw().
+// Track last click for manual double-click detection (the native dblclick
+// event doesn't fire reliably because redraw() rebuilds the DOM between clicks).
 let lastClickedCardInfo = null;
+let lastClickTime = 0;
+const DBLCLICK_THRESHOLD = 400; // ms
 
 // ── Drag state ────────────────────────────────────
 // { cards, source, cardEls }  (cardEls: DOM nodes to mark .dragging)
 let dragState = null;
-// Suppress the click that fires right after a drag ends
-let suppressNextClick = false;
+// Suppress the click that fires right after a drag ends.
+// Uses a timestamp so a stale flag can't eat a later genuine click.
+let suppressClickUntil = 0;
 
 // ── Touch state ───────────────────────────────────
 // null when idle; during a touch drag:
@@ -255,7 +258,7 @@ function handleTouchEnd(e) {
     clearSelection();
   }
 
-  suppressNextClick = true;
+  suppressClickUntil = Date.now() + 50;
   touchState = null;
   redraw();
 }
@@ -357,7 +360,7 @@ function handleDrop(e) {
   }
 
   dragState = null;
-  suppressNextClick = true;
+  suppressClickUntil = Date.now() + 50;
   redraw();
 }
 
@@ -365,7 +368,7 @@ function handleDragEnd() {
   dragState = null;
   document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
   document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
-  suppressNextClick = true;
+  suppressClickUntil = Date.now() + 50;
   redraw();
 }
 
@@ -377,15 +380,14 @@ function handleClick(e) {
 
   // ── Stock click — always handle, even right after a drag
   if (pileEl && pileEl.id === 'stock') {
-    suppressNextClick = false;
+    suppressClickUntil = 0;
     clearSelection();
     Game.drawFromStock();
     redraw();
     return;
   }
 
-  if (suppressNextClick) { suppressNextClick = false; return; }
-  lastClickedCardInfo = null;
+  if (Date.now() < suppressClickUntil) return;
 
   // ── Card click
   if (cardEl) {
@@ -398,18 +400,33 @@ function handleClick(e) {
       return;
     }
 
+    const resolved = resolveCard(cardEl);
+    if (!resolved) return;
+
+    // Manual double-click detection — checked first, before selection/tryDrop,
+    // so it works regardless of prior selection state.
+    const now = Date.now();
+    if (
+      lastClickedCardInfo &&
+      now - lastClickTime < DBLCLICK_THRESHOLD &&
+      lastClickedCardInfo.card.suit === resolved.card.suit &&
+      lastClickedCardInfo.card.rank === resolved.card.rank
+    ) {
+      lastClickedCardInfo = null;
+      lastClickTime = 0;
+      autoMoveToFoundation(resolved);
+      return;
+    }
+
+    lastClickedCardInfo = resolved;
+    lastClickTime = now;
+
     // If something is already selected, try to move selection TO this card's pile
     if (selection) {
       // Attempt drop on this card's pile
       const pileEl2 = cardEl.closest('.pile');
       if (tryDrop(pileEl2)) return;
     }
-
-    // Select / re-select
-    const resolved = resolveCard(cardEl);
-    if (!resolved) return;
-
-    lastClickedCardInfo = resolved;
 
     if (
       selection &&
@@ -473,15 +490,18 @@ function tryDrop(pileEl) {
   return false;
 }
 
-// ── Double-click: auto-move to foundation ─────────
+// ── Auto-move to foundation (triggered by manual double-click detection) ──
 
-function handleDblClick(e) {
-  const info = lastClickedCardInfo;
-  lastClickedCardInfo = null;
-  if (!info || info.cards.length !== 1) return;
+function autoMoveToFoundation(info) {
+  const card = info.card;
+
+  if (info.source.type === 'tableau') {
+    const col = Game.getState().tableau[info.source.colIndex];
+    if (col[col.length - 1] !== card) return;
+  }
 
   clearSelection();
-  const moved = Game.moveToFoundation(info.card, info.source);
+  const moved = Game.moveToFoundation(card, info.source);
   if (moved && Game.checkWin()) showWin();
   redraw();
 }
@@ -551,7 +571,6 @@ document.getElementById('play-again-btn').addEventListener('click', startNewGame
 
 const board = document.getElementById('board');
 board.addEventListener('click', handleClick);
-board.addEventListener('dblclick', handleDblClick);
 board.addEventListener('dragstart', handleDragStart);
 board.addEventListener('dragover', handleDragOver);
 board.addEventListener('dragleave', handleDragLeave);
