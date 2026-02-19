@@ -556,3 +556,31 @@ h1 {
     text-shadow: 3px 3px 0 #cc2222;
     letter-spacing: 3px;
 }
+
+/* ── Animations ───────────────────────────────── */
+
+@keyframes flip-reveal {
+    0%   { opacity: 0; transform: translateY(-8px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+.card.flip-reveal {
+    animation: flip-reveal 0.15s ease-out both;
+}
+
+@keyframes card-land {
+    0%   { transform: scale(0.88); opacity: 0.7; }
+    60%  { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); }
+}
+.card.card-land {
+    animation: card-land 0.18s ease-out both;
+}
+
+@keyframes win-enter {
+    0%   { transform: scale(0.85) translateY(12px); opacity: 0; }
+    65%  { transform: scale(1.03) translateY(-2px); }
+    100% { transform: scale(1) translateY(0); }
+}
+#win-box {
+    animation: win-enter 0.25s ease-out both;
+}

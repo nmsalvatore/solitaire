@@ -122,6 +122,7 @@ function moveToFoundation(card, source) {
 
   _removeFromSource([card], source);
   state.foundations[fi].push(card);
+  card._landAnim = true;
   _flipTopIfNeeded(source);
   return true;
 }
@@ -146,6 +147,7 @@ function _flipTopIfNeeded(source) {
     const col = state.tableau[source.colIndex];
     if (col.length > 0 && !col[col.length - 1].faceUp) {
       col[col.length - 1].faceUp = true;
+      col[col.length - 1]._flipAnim = true;
     }
   }
 }
