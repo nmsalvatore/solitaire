@@ -498,14 +498,24 @@ test('canAutoComplete returns false during normal play (face-down tableau cards)
   assert(!Game.canAutoComplete(), 'should be false when tableau has face-down cards');
 });
 
-test('canAutoComplete returns true when stock is empty and all tableau cards are face-up', () => {
+test('canAutoComplete returns true when stock is empty, waste is empty, and all tableau cards are face-up', () => {
+  const state = Game.initGame();
+  state.stock = [];
+  state.waste = [];
+  for (let col = 0; col < 7; col++) {
+    state.tableau[col] = state.tableau[col].map(c => ({ ...c, faceUp: true }));
+  }
+  assert(Game.canAutoComplete(), 'should be true when stock empty, waste empty, and all tableau face-up');
+});
+
+test('canAutoComplete returns false when waste still has cards', () => {
   const state = Game.initGame();
   state.stock = [];
   state.waste = [{ suit: 'hearts', rank: 5, faceUp: true }];
   for (let col = 0; col < 7; col++) {
     state.tableau[col] = state.tableau[col].map(c => ({ ...c, faceUp: true }));
   }
-  assert(Game.canAutoComplete(), 'should be true when stock empty and all tableau face-up');
+  assert(!Game.canAutoComplete(), 'should be false when waste has cards even if stock is empty and tableau is all face-up');
 });
 
 test('canAutoComplete returns true with empty tableau columns', () => {

@@ -194,6 +194,7 @@ function _flipTopIfNeeded(source) {
 
 function canAutoComplete() {
   if (state.stock.length > 0) return false;
+  if (state.waste.length > 0) return false;
   return state.tableau.every(col => col.every(c => c.faceUp));
 }
 
