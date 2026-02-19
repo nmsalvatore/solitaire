@@ -64,7 +64,7 @@ function stackCards(pile, cards, selection, cardH) {
     pile.innerHTML = "";
 
     const offsetDown = cardH * 0.08;
-    const offsetUp = cardH * 0.16;
+    const offsetUp = cardH * 0.2;
 
     let top = 0;
     cards.forEach((card, i) => {

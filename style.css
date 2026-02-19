@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap");
 
 *,
 *::before,
@@ -37,7 +37,7 @@
 
 body {
     background-color: var(--bg);
-    font-family: "Press Start 2P", monospace;
+    font-family: "Silkscreen", monospace;
     color: var(--text);
     min-height: 100vh;
     padding: var(--body-pad);
@@ -57,17 +57,9 @@ header {
 }
 
 h1 {
-    font-size: calc(var(--card-w) * 0.22);
-    letter-spacing: 2px;
+    font-size: calc(var(--card-w) * 0.28);
     color: var(--card-face);
     text-shadow: 2px 2px 0 var(--shadow);
-}
-
-#byline {
-    font-size: calc(var(--card-w) * 0.12);
-    letter-spacing: 1px;
-    color: var(--text-secondary);
-    text-shadow: 2px 2px var(--pile-empty);
 }
 
 #header-controls {
@@ -84,7 +76,7 @@ h1 {
 }
 
 #move-counter {
-    font-size: calc(var(--card-w) * 0.12);
+    font-size: calc(var(--card-w) * 0.15);
     color: var(--text-secondary);
     letter-spacing: 1px;
     text-align: right;
@@ -94,13 +86,13 @@ h1 {
 #play-again-btn,
 #undo-btn,
 #help-btn {
-    font-family: "Press Start 2P", monospace;
-    font-size: calc(var(--card-w) * 0.12);
+    font-family: "Silkscreen", monospace;
+    font-size: calc(var(--card-w) * 0.15);
     padding: calc(var(--card-w) * 0.1) calc(var(--card-w) * 0.14);
     background: var(--card-face);
     color: var(--black);
-    border: 3px solid var(--black);
-    box-shadow: 3px 3px 0 var(--shadow);
+    border: 2px solid var(--black);
+    box-shadow: 2px 2px 0 var(--shadow);
     cursor: pointer;
     image-rendering: pixelated;
     transition:
@@ -109,7 +101,7 @@ h1 {
 }
 
 #undo-btn {
-    font-size: calc(var(--card-w) * 0.18);
+    font-size: calc(var(--card-w) * 0.22);
     padding: calc(var(--card-w) * 0.05) calc(var(--card-w) * 0.12);
 }
 
@@ -161,7 +153,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: calc(var(--card-w) * 0.28);
+    font-size: calc(var(--card-w) * 0.35);
     color: var(--pile-border);
     pointer-events: none;
 }
@@ -197,7 +189,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: calc(var(--card-w) * 0.36);
+    font-size: calc(var(--card-w) * 0.44);
     color: var(--pile-border);
     pointer-events: none;
     font-family: sans-serif;
@@ -276,7 +268,7 @@ h1 {
 .card .rank-tl,
 .card .rank-br {
     position: absolute;
-    font-size: calc(var(--card-w) * 0.15);
+    font-size: calc(var(--card-w) * 0.19);
     line-height: 1;
     padding: calc(var(--card-w) * 0.04);
 }
@@ -297,7 +289,7 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: calc(var(--card-w) * 0.34);
+    font-size: calc(var(--card-w) * 0.42);
     line-height: 1;
     font-family: sans-serif;
 }
@@ -382,7 +374,7 @@ h1 {
 }
 
 #help-title {
-    font-size: 16px;
+    font-size: 20px;
     color: var(--black);
     text-shadow: 2px 2px 0 white;
     letter-spacing: 2px;
@@ -390,8 +382,8 @@ h1 {
 }
 
 #help-close-btn {
-    font-family: "Press Start 2P", monospace;
-    font-size: 11px;
+    font-family: "Silkscreen", monospace;
+    font-size: 14px;
     position: absolute;
     top: 16px;
     right: 16px;
@@ -415,7 +407,7 @@ h1 {
 
 /* ── Help slider ─────────────────────────────────── */
 #help-counter {
-    font-size: 10px;
+    font-size: 13px;
     color: var(--accent);
     letter-spacing: 1px;
     margin-bottom: 14px;
@@ -449,14 +441,14 @@ h1 {
 }
 
 .slide-title {
-    font-size: 14px;
+    font-size: 18px;
     color: var(--accent);
     letter-spacing: 2px;
     margin-bottom: 12px;
 }
 
 .slide-body {
-    font-size: 11px;
+    font-size: 14px;
     color: var(--black);
     line-height: 2.2;
 }
@@ -484,7 +476,7 @@ h1 {
     position: absolute;
     top: 2px;
     left: 3px;
-    font-size: 7px;
+    font-size: 9px;
 }
 
 .mc-suit {
@@ -594,8 +586,8 @@ h1 {
 
 #help-prev,
 #help-next {
-    font-family: "Press Start 2P", monospace;
-    font-size: 11px;
+    font-family: "Silkscreen", monospace;
+    font-size: 14px;
     padding: 10px 14px;
     background: var(--card-face);
     color: var(--black);
@@ -647,14 +639,14 @@ h1 {
 }
 
 #win-title {
-    font-size: 20px;
+    font-size: 26px;
     color: var(--black);
     text-shadow: 3px 3px 0 var(--red);
     letter-spacing: 3px;
 }
 
 #win-moves {
-    font-size: 11px;
+    font-size: 14px;
     color: var(--text-muted);
     letter-spacing: 1px;
 }
