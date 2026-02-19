@@ -32,6 +32,7 @@ function shuffle(deck) {
 let state = null;
 let snapshot = null;
 let moveCount = 0;
+let drawCount = 1;
 
 function saveSnapshot() {
   snapshot = { state: JSON.parse(JSON.stringify(state)), moveCount };
@@ -112,6 +113,14 @@ function canMoveToTableau(card, targetCol) {
 
 // ── Actions ───────────────────────────────────────
 
+function setDrawCount(n) {
+  drawCount = n;
+}
+
+function getDrawCount() {
+  return drawCount;
+}
+
 function drawFromStock() {
   moveCount++;
   if (state.stock.length === 0) {
@@ -119,9 +128,12 @@ function drawFromStock() {
     state.stock = state.waste.reverse().map(c => ({ ...c, faceUp: false }));
     state.waste = [];
   } else {
-    const card = state.stock.pop();
-    card.faceUp = true;
-    state.waste.push(card);
+    const toDraw = Math.min(drawCount, state.stock.length);
+    for (let i = 0; i < toDraw; i++) {
+      const card = state.stock.pop();
+      card.faceUp = true;
+      state.waste.push(card);
+    }
   }
 }
 
@@ -204,6 +216,8 @@ window.Game = {
   moveToTableau,
   moveToFoundation,
   getMoveCount() { return moveCount; },
+  setDrawCount,
+  getDrawCount,
   canAutoComplete,
   checkWin,
   saveSnapshot,

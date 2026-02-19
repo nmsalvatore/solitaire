@@ -546,6 +546,48 @@ test('checkWin returns true when all foundations have 13 cards', () => {
   assert(Game.checkWin());
 });
 
+// drawFromStock with drawCount=3
+test('draw-3 moves 3 cards from stock to waste', () => {
+  Game.setDrawCount(3);
+  const state = Game.initGame();
+  const originalStockLen = state.stock.length;
+  Game.drawFromStock();
+  assertEqual(state.waste.length, 3, 'waste should have 3 cards');
+  assertEqual(state.stock.length, originalStockLen - 3, 'stock should lose 3 cards');
+  assert(state.waste.every(c => c.faceUp), 'all waste cards should be face-up');
+  Game.setDrawCount(1);
+});
+
+test('draw-3 partial: draws only remaining cards when stock has fewer than 3', () => {
+  Game.setDrawCount(3);
+  const state = Game.initGame();
+  // Drain stock to exactly 2 cards
+  while (state.stock.length > 2) {
+    state.stock.pop();
+  }
+  Game.drawFromStock();
+  assertEqual(state.waste.length, 2, 'waste should have 2 cards');
+  assertEqual(state.stock.length, 0, 'stock should be empty');
+  Game.setDrawCount(1);
+});
+
+test('draw-3 recycle: waste reverses back to stock when stock is empty', () => {
+  Game.setDrawCount(3);
+  const state = Game.initGame();
+  // Drain entire stock
+  while (state.stock.length > 0) {
+    Game.drawFromStock();
+  }
+  const wasteLen = state.waste.length;
+  assert(wasteLen > 0, 'waste should have cards');
+  // Recycle
+  Game.drawFromStock();
+  assertEqual(state.waste.length, 0, 'waste should be empty after recycle');
+  assertEqual(state.stock.length, wasteLen, 'stock should have all recycled cards');
+  assert(state.stock.every(c => !c.faceUp), 'recycled cards should be face-down');
+  Game.setDrawCount(1);
+});
+
 // ── Summary ───────────────────────────────────────
 
 window._testResults = { passed: _passed, failed: _failed };

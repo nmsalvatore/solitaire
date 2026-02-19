@@ -63,8 +63,8 @@ function stackCards(pile, cards, selection, cardH) {
     // Clear previous contents
     pile.innerHTML = "";
 
-    const offsetDown = cardH * 0.08;
-    const offsetUp = cardH * 0.2;
+    const offsetDown = cardH * 0.1;
+    const offsetUp = cardH * 0.25;
 
     let top = 0;
     cards.forEach((card, i) => {
@@ -132,7 +132,7 @@ function renderGame(state, selection) {
     wasteEl.style.minHeight = "";
     if (waste.length > 0) {
         const showCount = Math.min(waste.length, 3);
-        const wasteFan = cardW * 0.2;
+        const wasteFan = cardW * 0.35;
         for (let i = showCount - 1; i >= 0; i--) {
             const card = waste[waste.length - 1 - i];
             const el = makeCard(card);
@@ -173,6 +173,13 @@ function renderGame(state, selection) {
     document.querySelectorAll(".tableau-col").forEach((colEl) => {
         const colIndex = parseInt(colEl.dataset.col);
         stackCards(colEl, tableau[colIndex], selection, cardH);
+    });
+
+    // ── Draw toggle label
+    const drawOptions = document.querySelectorAll('.draw-option');
+    const currentDraw = String(Game.getDrawCount());
+    drawOptions.forEach(el => {
+        el.classList.toggle('active', el.dataset.draw === currentDraw);
     });
 }
 

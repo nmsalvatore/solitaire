@@ -17,6 +17,10 @@ let dragState = null;
 // Uses a timestamp so a stale flag can't eat a later genuine click.
 let suppressClickUntil = 0;
 
+// ── Draw count preference ────────────────────────
+const savedDraw = parseInt(localStorage.getItem('drawCount')) || 1;
+Game.setDrawCount(savedDraw === 3 ? 3 : 1);
+
 // ── Touch state ───────────────────────────────────
 // null when idle; during a touch drag:
 // { cards, source, startX, startY, isDragging, ghostEl, offsetX, offsetY, currentTarget }
@@ -710,6 +714,18 @@ document.addEventListener('keydown', e => {
 
 // Re-render on resize so JS-computed offsets match new card dimensions
 window.addEventListener('resize', () => redraw());
+
+// Draw toggle
+document.getElementById('draw-toggle').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const option = e.target.closest('.draw-option');
+  if (!option) return;
+  const next = parseInt(option.dataset.draw);
+  if (next === Game.getDrawCount()) return;
+  Game.setDrawCount(next);
+  localStorage.setItem('drawCount', next);
+  startNewGame();
+});
 
 // Kick off
 startNewGame();
