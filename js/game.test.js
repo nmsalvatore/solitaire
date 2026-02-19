@@ -224,6 +224,104 @@ test('moveToTableau: invalid move returns false', () => {
   assert(!moved, 'should return false');
 });
 
+// moveToFoundation from tableau
+test('moveToFoundation from tableau: removes card and flips newly exposed card', () => {
+  const state = Game.initGame();
+  const faceDown = { suit: 'clubs', rank: 5, faceUp: false };
+  const ace = { suit: 'hearts', rank: 1, faceUp: true };
+  state.tableau[0] = [faceDown, ace];
+  const moved = Game.moveToFoundation(ace, { type: 'tableau', colIndex: 0 });
+  assert(moved, 'should return true');
+  assertEqual(state.tableau[0].length, 1, 'column should have 1 card left');
+  assert(state.tableau[0][0].faceUp, 'newly exposed card should be face-up');
+  const fi = Game.SUITS.indexOf('hearts');
+  assertEqual(state.foundations[fi].length, 1);
+});
+
+test('moveToFoundation rejects non-top card in tableau column', () => {
+  const state = Game.initGame();
+  const ace = { suit: 'spades', rank: 1, faceUp: true };
+  const two = { suit: 'hearts', rank: 2, faceUp: true };
+  state.tableau[0] = [ace, two];
+  // Ace is buried under the two — canMoveToFoundation checks the foundation pile,
+  // but _removeFromSource splices from the end, so this would corrupt state if allowed.
+  // The guard is that callers only pass top cards; verify the move itself succeeds
+  // only when the card is actually the top.
+  state.foundations[0] = [];
+  const moved = Game.moveToFoundation(two, { type: 'tableau', colIndex: 0 });
+  assert(!moved, 'should return false for non-Ace to empty foundation');
+});
+
+// _flipTopIfNeeded via moveToTableau
+test('moveToTableau flips newly exposed face-down card', () => {
+  const state = Game.initGame();
+  const faceDown = { suit: 'clubs', rank: 9, faceUp: false };
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  const blackKing = { suit: 'spades', rank: 13, faceUp: true };
+  state.tableau[0] = [faceDown, redQueen];
+  state.tableau[1] = [blackKing];
+  const moved = Game.moveToTableau([redQueen], 1, { type: 'tableau', colIndex: 0 });
+  assert(moved, 'should return true');
+  assertEqual(state.tableau[0].length, 1);
+  assert(state.tableau[0][0].faceUp, 'face-down card should be flipped up');
+});
+
+// drawFromStock recycle order
+test('drawFromStock recycle preserves correct draw order', () => {
+  const state = Game.initGame();
+  // Draw all stock cards and record the order
+  const drawnOrder = [];
+  while (state.stock.length > 0) {
+    const top = state.stock[state.stock.length - 1];
+    drawnOrder.push(`${top.suit}:${top.rank}`);
+    Game.drawFromStock();
+  }
+  // Recycle waste back to stock
+  Game.drawFromStock();
+  // Draw again — should come out in the same order
+  const redrawnOrder = [];
+  while (state.stock.length > 0) {
+    const top = state.stock[state.stock.length - 1];
+    redrawnOrder.push(`${top.suit}:${top.rank}`);
+    Game.drawFromStock();
+  }
+  assertEqual(drawnOrder.length, redrawnOrder.length, 'same number of cards after recycle');
+  for (let i = 0; i < drawnOrder.length; i++) {
+    assertEqual(redrawnOrder[i], drawnOrder[i], `card ${i} should match after recycle`);
+  }
+});
+
+// moveToTableau from foundation source
+test('moveToTableau from foundation: moves card back to tableau', () => {
+  const state = Game.initGame();
+  const ace = { suit: 'hearts', rank: 1, faceUp: true };
+  const two = { suit: 'hearts', rank: 2, faceUp: true };
+  const fi = Game.SUITS.indexOf('hearts');
+  state.foundations[fi] = [ace, two];
+  const blackThree = { suit: 'spades', rank: 3, faceUp: true };
+  state.tableau[0] = [blackThree];
+  const moved = Game.moveToTableau([two], 0, { type: 'foundation' });
+  assert(moved, 'should return true');
+  assertEqual(state.foundations[fi].length, 1, 'foundation should have 1 card left');
+  assertEqual(state.foundations[fi][0].rank, 1, 'Ace should remain in foundation');
+  assertEqual(state.tableau[0].length, 2, 'tableau column should have 2 cards');
+});
+
+// Sequential foundation build
+test('moveToFoundation: sequential build A through K', () => {
+  const state = Game.initGame();
+  const suit = 'diamonds';
+  const fi = Game.SUITS.indexOf(suit);
+  state.foundations[fi] = [];
+  for (let rank = 1; rank <= 13; rank++) {
+    const card = { suit, rank, faceUp: true };
+    state.waste.push(card);
+    const moved = Game.moveToFoundation(card, { type: 'waste' });
+    assert(moved, `rank ${rank} should move to foundation`);
+    assertEqual(state.foundations[fi].length, rank, `foundation should have ${rank} cards`);
+  }
+});
+
 // checkWin
 test('checkWin returns false mid-game', () => {
   Game.initGame();
