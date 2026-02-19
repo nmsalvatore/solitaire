@@ -181,6 +181,12 @@ function renderGame(state, selection) {
     drawOptions.forEach(el => {
         el.classList.toggle('active', el.dataset.draw === currentDraw);
     });
+
+    // ── Lazy toggle label
+    const lazyVal = localStorage.getItem('lazyMode') === 'on' ? 'on' : 'off';
+    document.querySelectorAll('.lazy-option').forEach(el => {
+        el.classList.toggle('active', el.dataset.lazy === lazyVal);
+    });
 }
 
 window.Render = { renderGame };

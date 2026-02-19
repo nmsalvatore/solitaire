@@ -614,6 +614,76 @@ test('draw-3 recycle: waste reverses back to stock when stock is empty', () => {
   Game.setDrawCount(1);
 });
 
+// findBestMove
+test('findBestMove prefers foundation over tableau', () => {
+  const state = Game.initGame();
+  state.foundations[0] = []; // spades empty
+  state.tableau[0] = [{ suit: 'hearts', rank: 2, faceUp: true }]; // red 2
+  const ace = { suit: 'spades', rank: 1, faceUp: true };
+  state.waste = [ace];
+  const dest = Game.findBestMove(ace, { type: 'waste' });
+  assertEqual(dest.type, 'foundation', 'should prefer foundation');
+  assertEqual(dest.suit, 'spades');
+});
+
+test('findBestMove falls back to non-empty tableau when foundation is not valid', () => {
+  const state = Game.initGame();
+  state.foundations[0] = []; // spades empty, needs Ace
+  const blackJack = { suit: 'spades', rank: 11, faceUp: true };
+  state.waste = [blackJack];
+  // Put a red Queen on col 0 so Jack can go there
+  state.tableau[0] = [{ suit: 'hearts', rank: 12, faceUp: true }];
+  const dest = Game.findBestMove(blackJack, { type: 'waste' });
+  assertEqual(dest.type, 'tableau', 'should fall back to tableau');
+  assertEqual(dest.colIndex, 0);
+});
+
+test('findBestMove prefers non-empty tableau over empty', () => {
+  const state = Game.initGame();
+  // Clear all tableau columns
+  for (let i = 0; i < 7; i++) state.tableau[i] = [];
+  // Put a red Queen on col 3
+  state.tableau[3] = [{ suit: 'hearts', rank: 12, faceUp: true }];
+  const blackJack = { suit: 'spades', rank: 11, faceUp: true };
+  state.waste = [blackJack];
+  const dest = Game.findBestMove(blackJack, { type: 'waste' });
+  assertEqual(dest.type, 'tableau');
+  assertEqual(dest.colIndex, 3, 'should prefer non-empty col 3 over empty columns');
+});
+
+test('findBestMove returns empty tableau for King when no non-empty column fits', () => {
+  const state = Game.initGame();
+  for (let i = 0; i < 7; i++) state.tableau[i] = [];
+  const king = { suit: 'spades', rank: 13, faceUp: true };
+  state.waste = [king];
+  const dest = Game.findBestMove(king, { type: 'waste' });
+  assertEqual(dest.type, 'tableau');
+  assertEqual(dest.colIndex, 0, 'should use first empty column');
+});
+
+test('findBestMove returns null when no valid destination exists', () => {
+  const state = Game.initGame();
+  // Put a 5 of spades in waste — foundations empty (needs Ace), no matching tableau target
+  const five = { suit: 'spades', rank: 5, faceUp: true };
+  state.waste = [five];
+  // Clear tableau so no valid targets (5 is not a King, can't go to empty)
+  for (let i = 0; i < 7; i++) state.tableau[i] = [];
+  const dest = Game.findBestMove(five, { type: 'waste' });
+  assertEqual(dest, null, 'should return null');
+});
+
+test('findBestMove skips source column for tableau cards', () => {
+  const state = Game.initGame();
+  for (let i = 0; i < 7; i++) state.tableau[i] = [];
+  // Col 0 has a red Queen, col 1 has a black King
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  state.tableau[0] = [redQueen];
+  state.tableau[1] = [{ suit: 'spades', rank: 13, faceUp: true }];
+  const dest = Game.findBestMove(redQueen, { type: 'tableau', colIndex: 0 });
+  assertEqual(dest.type, 'tableau');
+  assertEqual(dest.colIndex, 1, 'should move to col 1, not back to col 0');
+});
+
 // setDrawCount / getDrawCount
 test('setDrawCount and getDrawCount round-trip', () => {
   Game.setDrawCount(3);

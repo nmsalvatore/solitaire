@@ -29,6 +29,9 @@ let touchState = null;
 // ── Auto-complete state ──────────────────────────
 let autoCompleting = false;
 
+// ── Lazy mode state ──────────────────────────────
+let lazyMode = localStorage.getItem('lazyMode') === 'on';
+
 // ── Helpers ───────────────────────────────────────
 
 function redraw() {
@@ -461,6 +464,28 @@ function handleClick(e) {
     lastClickedCardInfo = resolved;
     lastClickTime = now;
 
+    // ── Lazy mode: single click auto-moves
+    if (lazyMode) {
+      const dest = Game.findBestMove(resolved.card, resolved.source);
+      if (dest) {
+        clearSelection();
+        Game.saveSnapshot();
+        if (dest.type === 'foundation') {
+          Game.moveToFoundation(resolved.card, resolved.source);
+          if (Game.checkWin()) showWin();
+        } else {
+          Game.moveToTableau(resolved.cards, dest.colIndex, resolved.source);
+        }
+        redraw();
+        return;
+      }
+      // No valid move — shake to indicate
+      clearSelection();
+      redraw();
+      shakeCards([resolved.card]);
+      return;
+    }
+
     // If something is already selected, try to move selection TO this card's pile
     if (selection) {
       // Attempt drop on this card's pile
@@ -725,6 +750,18 @@ document.getElementById('draw-toggle').addEventListener('click', (e) => {
   Game.setDrawCount(next);
   localStorage.setItem('drawCount', next);
   startNewGame();
+});
+
+// Lazy toggle
+document.getElementById('lazy-toggle').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const option = e.target.closest('.lazy-option');
+  if (!option) return;
+  const next = option.dataset.lazy;
+  lazyMode = next === 'on';
+  localStorage.setItem('lazyMode', lazyMode ? 'on' : 'off');
+  clearSelection();
+  redraw();
 });
 
 // Kick off

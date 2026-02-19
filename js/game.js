@@ -190,6 +190,36 @@ function _flipTopIfNeeded(source) {
   }
 }
 
+// ── Lazy mode (find best move) ────────────────────
+
+function findBestMove(card, source) {
+  // 1. Try foundation (single card only)
+  const fi = foundationIndex(card.suit);
+  if (canMoveToFoundation(card, state.foundations[fi])) {
+    return { type: 'foundation', suit: card.suit };
+  }
+
+  // 2. Try non-empty tableau columns
+  for (let ci = 0; ci < 7; ci++) {
+    if (source.type === 'tableau' && source.colIndex === ci) continue;
+    const col = state.tableau[ci];
+    if (col.length > 0 && canMoveToTableau(card, col)) {
+      return { type: 'tableau', colIndex: ci };
+    }
+  }
+
+  // 3. Try empty tableau columns (Kings only, avoid wasting slots)
+  for (let ci = 0; ci < 7; ci++) {
+    if (source.type === 'tableau' && source.colIndex === ci) continue;
+    const col = state.tableau[ci];
+    if (col.length === 0 && canMoveToTableau(card, col)) {
+      return { type: 'tableau', colIndex: ci };
+    }
+  }
+
+  return null;
+}
+
 // ── Win check ─────────────────────────────────────
 
 function canAutoComplete() {
@@ -219,6 +249,7 @@ window.Game = {
   getMoveCount() { return moveCount; },
   setDrawCount,
   getDrawCount,
+  findBestMove,
   canAutoComplete,
   checkWin,
   saveSnapshot,

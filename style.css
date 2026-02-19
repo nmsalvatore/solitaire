@@ -225,6 +225,27 @@ h1 {
     margin: 0 2px;
 }
 
+#lazy-toggle {
+    font-family: "Silkscreen", monospace;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    user-select: none;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.lazy-option {
+    cursor: pointer;
+}
+
+.lazy-option:hover {
+    color: var(--text);
+}
+
+.lazy-option.active {
+    color: var(--text);
+}
+
 /* Stock empty indicator */
 #stock.empty::before {
     content: "↺";
