@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klondike Solitaire</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>SOLITAIRE</h1>
+    <button id="new-game-btn">NEW GAME</button>
+    <button id="help-btn" aria-label="Rules">?</button>
+  </header>
+
+  <main id="board">
+    <section id="top-row">
+      <div id="stock" class="pile" title="Draw pile"></div>
+      <div id="waste" class="pile" title="Waste pile"></div>
+      <div class="spacer"></div>
+      <div class="foundation pile" data-suit="spades" title="Spades foundation"></div>
+      <div class="foundation pile" data-suit="hearts" title="Hearts foundation"></div>
+      <div class="foundation pile" data-suit="diamonds" title="Diamonds foundation"></div>
+      <div class="foundation pile" data-suit="clubs" title="Clubs foundation"></div>
+    </section>
+
+    <section id="tableau">
+      <div class="tableau-col pile" data-col="0"></div>
+      <div class="tableau-col pile" data-col="1"></div>
+      <div class="tableau-col pile" data-col="2"></div>
+      <div class="tableau-col pile" data-col="3"></div>
+      <div class="tableau-col pile" data-col="4"></div>
+      <div class="tableau-col pile" data-col="5"></div>
+      <div class="tableau-col pile" data-col="6"></div>
+    </section>
+  </main>
+
+  <div id="help-screen" hidden>
+    <div id="help-box">
+      <div id="help-title">HOW TO PLAY</div>
+      <button id="help-close-btn">✕</button>
+      <div id="help-counter"><span id="help-slide-num">1</span> / 4</div>
+
+      <div id="help-slides-wrap">
+        <div id="help-slides">
+
+          <!-- SLIDE 1: THE GOAL -->
+          <div class="help-slide">
+            <div class="slide-visual">
+              <div class="mini-pile">♠</div>
+              <div class="mini-pile red">♥</div>
+              <div class="mini-pile red">♦</div>
+              <div class="mini-pile">♣</div>
+            </div>
+            <div class="slide-title">THE GOAL</div>
+            <p class="slide-body">Move all 52 cards to the 4 foundation piles—one per suit, Ace through King—to win!</p>
+          </div>
+
+          <!-- SLIDE 2: THE TABLEAU -->
+          <div class="help-slide">
+            <div class="slide-visual">
+              <div class="slide-stack">
+                <div class="mini-card black" style="top:0">  <span class="mc-rank">9</span><span class="mc-suit">♠</span></div>
+                <div class="mini-card red"   style="top:18px"><span class="mc-rank">8</span><span class="mc-suit">♥</span></div>
+                <div class="mini-card black" style="top:36px"><span class="mc-rank">7</span><span class="mc-suit">♠</span></div>
+              </div>
+              <div class="slide-arrow">➡</div>
+              <div class="mini-pile" style="font-size:13px;color:#2a5a8c;">K</div>
+            </div>
+            <div class="slide-title">THE TABLEAU</div>
+            <p class="slide-body">Build columns in descending rank, alternating red and black. Only Kings can start empty columns.</p>
+          </div>
+
+          <!-- SLIDE 3: STOCK & WASTE -->
+          <div class="help-slide">
+            <div class="slide-visual">
+              <div class="mini-card face-down-mini"></div>
+              <div class="slide-arrow">➡</div>
+              <div class="mini-card red"><span class="mc-rank">A</span><span class="mc-suit">♥</span></div>
+              <div class="slide-arrow" style="font-size:22px;color:#2a5a8c;">↺</div>
+            </div>
+            <div class="slide-title">STOCK &amp; WASTE</div>
+            <p class="slide-body">Click the face-down pile to flip a card to the waste. When empty, click again to recycle.</p>
+          </div>
+
+          <!-- SLIDE 4: MOVING -->
+          <div class="help-slide">
+            <div class="slide-visual">
+              <div class="slide-stack">
+                <div class="mini-card black selected-mini" style="top:0">  <span class="mc-rank">9</span><span class="mc-suit">♠</span></div>
+                <div class="mini-card red   selected-mini" style="top:18px"><span class="mc-rank">8</span><span class="mc-suit">♥</span></div>
+                <div class="mini-card black selected-mini" style="top:36px"><span class="mc-rank">7</span><span class="mc-suit">♠</span></div>
+              </div>
+              <div class="slide-arrow">➡</div>
+              <div class="mini-card red"><span class="mc-rank">10</span><span class="mc-suit">♥</span></div>
+            </div>
+            <div class="slide-title">MOVING</div>
+            <p class="slide-body">Click a card to select it (yellow glow), then click a target to move. Picking up a card takes all cards below it too. Double-click to auto-send to a foundation. Drag &amp; drop also works!</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="help-dots">
+        <button class="help-dot active" data-dot="0"></button>
+        <button class="help-dot" data-dot="1"></button>
+        <button class="help-dot" data-dot="2"></button>
+        <button class="help-dot" data-dot="3"></button>
+      </div>
+
+      <div id="help-nav">
+        <button id="help-prev">&#x25C4;</button>
+        <button id="help-next">&#x25BA;</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="win-screen" hidden>
+    <div id="win-box">
+      <div id="win-title">YOU WIN!</div>
+      <button id="play-again-btn">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <script src="js/game.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

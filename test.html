@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Solitaire — Game Tests</title>
+  <style>
+    body { font-family: monospace; background: #1a3a5c; color: #f0e8d0; padding: 24px; }
+    h1   { margin-bottom: 16px; font-size: 18px; }
+    pre  { background: #0e2a47; padding: 16px; border: 1px solid #2a5a8c; white-space: pre-wrap; }
+    .pass  { color: #44dd88; }
+    .fail  { color: #ff4444; }
+    .summary { margin-top: 16px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>Solitaire — Unit Tests</h1>
+  <p>Open the browser console to see full output, or read the results below.</p>
+  <pre id="output">Running…</pre>
+  <div id="summary" class="summary"></div>
+
+  <!-- Load game logic only (no DOM dependencies) -->
+  <script src="js/game.js"></script>
+
+  <script>
+    // Capture console output into the page
+    const lines = [];
+    const _log   = console.log.bind(console);
+    const _error = console.error.bind(console);
+
+    console.log = (...args) => {
+      _log(...args);
+      lines.push({ level: 'log', text: args.join(' ') });
+    };
+    console.error = (...args) => {
+      _error(...args);
+      lines.push({ level: 'error', text: args.join(' ') });
+    };
+  </script>
+
+  <script src="js/game.test.js"></script>
+
+  <script>
+    // Render captured output
+    const out = document.getElementById('output');
+    out.innerHTML = lines.map(l => {
+      const cls = l.level === 'error' ? 'fail' : (l.text.includes('FAIL') ? 'fail' : 'pass');
+      return `<span class="${cls}">${l.text}</span>`;
+    }).join('\n');
+
+    const r = window._testResults || { passed: 0, failed: 0 };
+    const summaryEl = document.getElementById('summary');
+    summaryEl.style.color = r.failed > 0 ? '#ff4444' : '#44dd88';
+    summaryEl.textContent = r.failed > 0
+      ? `✗ ${r.failed} test(s) failed`
+      : `✓ All ${r.passed} tests passed`;
+  </script>
+</body>
+</html>
