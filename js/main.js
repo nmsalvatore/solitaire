@@ -529,7 +529,7 @@ document.getElementById('new-game-btn').addEventListener('click', startNewGame);
 document.getElementById('play-again-btn').addEventListener('click', startNewGame);
 
 (function HelpSlider() {
-  const TOTAL = 4;
+  const TOTAL = 5;
   let cur = 0;
   const screen   = document.getElementById('help-screen');
   const prevBtn  = document.getElementById('help-prev');

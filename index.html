@@ -44,7 +44,7 @@
     <div id="help-box">
       <div id="help-title">HOW TO PLAY</div>
       <button id="help-close-btn">✕</button>
-      <div id="help-counter"><span id="help-slide-num">1</span> / 4</div>
+      <div id="help-counter"><span id="help-slide-num">1</span> / 5</div>
 
       <div id="help-slides-wrap">
         <div id="help-slides">
@@ -61,7 +61,7 @@
             <p class="slide-body">Move all 52 cards to the 4 foundation piles—one per suit, Ace through King—to win!</p>
           </div>
 
-          <!-- SLIDE 2: THE TABLEAU -->
+          <!-- SLIDE 2: THE COLUMNS -->
           <div class="help-slide">
             <div class="slide-visual">
               <div class="slide-stack">
@@ -72,11 +72,11 @@
               <div class="slide-arrow">➡</div>
               <div class="mini-pile" style="font-size:13px;color:#2a5a8c;">K</div>
             </div>
-            <div class="slide-title">THE TABLEAU</div>
-            <p class="slide-body">Build columns in descending rank, alternating red and black. Only Kings can start empty columns.</p>
+            <div class="slide-title">THE COLUMNS</div>
+            <p class="slide-body">Build columns in descending rank, alternating red and black. Only Kings can start empty columns. Face-down cards flip automatically when uncovered.</p>
           </div>
 
-          <!-- SLIDE 3: STOCK & WASTE -->
+          <!-- SLIDE 3: THE DRAW PILE -->
           <div class="help-slide">
             <div class="slide-visual">
               <div class="mini-card face-down-mini"></div>
@@ -84,11 +84,22 @@
               <div class="mini-card red"><span class="mc-rank">A</span><span class="mc-suit">♥</span></div>
               <div class="slide-arrow" style="font-size:22px;color:#2a5a8c;">↺</div>
             </div>
-            <div class="slide-title">STOCK &amp; WASTE</div>
-            <p class="slide-body">Click the face-down pile to flip a card to the waste. When empty, click again to recycle.</p>
+            <div class="slide-title">THE DRAW PILE</div>
+            <p class="slide-body">Click the face-down pile to flip a card. Play it to a column or foundation, or click again for the next card. When empty, click to recycle.</p>
           </div>
 
-          <!-- SLIDE 4: MOVING -->
+          <!-- SLIDE 4: MOVING CARDS -->
+          <div class="help-slide">
+            <div class="slide-visual">
+              <div class="mini-card black selected-mini"><span class="mc-rank">7</span><span class="mc-suit">♠</span></div>
+              <div class="slide-arrow">➡</div>
+              <div class="mini-card red"><span class="mc-rank">8</span><span class="mc-suit">♥</span></div>
+            </div>
+            <div class="slide-title">MOVING CARDS</div>
+            <p class="slide-body">Click a card to select it (yellow glow), then click a valid target to move it there. You can also drag &amp; drop.</p>
+          </div>
+
+          <!-- SLIDE 5: STACKS & SHORTCUTS -->
           <div class="help-slide">
             <div class="slide-visual">
               <div class="slide-stack">
@@ -99,8 +110,8 @@
               <div class="slide-arrow">➡</div>
               <div class="mini-card red"><span class="mc-rank">10</span><span class="mc-suit">♥</span></div>
             </div>
-            <div class="slide-title">MOVING</div>
-            <p class="slide-body">Click a card to select it (yellow glow), then click a target to move. Picking up a card takes all cards below it too. Double-click to auto-send to a foundation. Drag &amp; drop also works!</p>
+            <div class="slide-title">STACKS &amp; SHORTCUTS</div>
+            <p class="slide-body">Selecting a card picks up everything below it too. Double-click a card to auto-send it to its foundation.</p>
           </div>
 
         </div>
@@ -111,6 +122,7 @@
         <button class="help-dot" data-dot="1"></button>
         <button class="help-dot" data-dot="2"></button>
         <button class="help-dot" data-dot="3"></button>
+        <button class="help-dot" data-dot="4"></button>
       </div>
 
       <div id="help-nav">
