@@ -106,6 +106,7 @@ h1 {
     align-items: center;
     gap: calc(var(--card-w) * 0.12);
     margin-top: 10px;
+    margin-bottom: var(--sp-xs);
 }
 
 #move-counter {
