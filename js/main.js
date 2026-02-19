@@ -14,6 +14,11 @@ let dragState = null;
 // Suppress the click that fires right after a drag ends
 let suppressNextClick = false;
 
+// ── Touch state ───────────────────────────────────
+// null when idle; during a touch drag:
+// { cards, source, startX, startY, isDragging, ghostEl, offsetX, offsetY, currentTarget }
+let touchState = null;
+
 // ── Helpers ───────────────────────────────────────
 
 function redraw() {
@@ -68,6 +73,200 @@ function resolveCard(cardEl) {
   }
 
   return null;
+}
+
+// ── Touch ghost ───────────────────────────────────
+
+function createTouchGhost(touch) {
+  const { cards, source } = touchState;
+
+  // Locate source pile element
+  let pileEl;
+  if (source.type === 'waste') {
+    pileEl = document.getElementById('waste');
+  } else if (source.type === 'foundation') {
+    pileEl = document.querySelector(`.foundation[data-suit="${cards[0].suit}"]`);
+  } else {
+    pileEl = document.querySelector(`.tableau-col[data-col="${source.colIndex}"]`);
+  }
+  if (!pileEl) return;
+
+  // Find first card's DOM element
+  const firstCard = cards[0];
+  const firstCardEl = pileEl.querySelector(`.card[data-suit="${firstCard.suit}"][data-rank="${firstCard.rank}"]`);
+  if (!firstCardEl) return;
+
+  const firstCardRect = firstCardEl.getBoundingClientRect();
+  const cardW = firstCardRect.width;
+  const cardH = firstCardRect.height;
+  const firstTopOffset = parseInt(firstCardEl.style.top) || 0;
+
+  // Compute ghost height to contain the whole stack
+  let ghostHeight = cardH;
+  if (cards.length > 1) {
+    const lastCard = cards[cards.length - 1];
+    const lastCardEl = pileEl.querySelector(`.card[data-suit="${lastCard.suit}"][data-rank="${lastCard.rank}"]`);
+    if (lastCardEl) {
+      const lastTopOffset = parseInt(lastCardEl.style.top) || 0;
+      ghostHeight = (lastTopOffset - firstTopOffset) + cardH;
+    }
+  }
+
+  // Create ghost container
+  const ghost = document.createElement('div');
+  ghost.id = 'touch-ghost';
+  ghost.style.width = cardW + 'px';
+  ghost.style.height = ghostHeight + 'px';
+
+  // Clone each card, adjusting top so the first card starts at top:0
+  cards.forEach(card => {
+    const cardEl = pileEl.querySelector(`.card[data-suit="${card.suit}"][data-rank="${card.rank}"]`);
+    if (!cardEl) return;
+    const clone = cardEl.cloneNode(true);
+    const originalTop = parseInt(cardEl.style.top) || 0;
+    clone.style.top = (originalTop - firstTopOffset) + 'px';
+    clone.style.zIndex = cardEl.style.zIndex;
+    clone.classList.remove('flip-reveal', 'card-land', 'selected', 'dragging');
+    ghost.appendChild(clone);
+  });
+
+  // Compute offset from touch point to ghost top-left
+  const offsetX = touch.clientX - firstCardRect.left;
+  const offsetY = touch.clientY - firstCardRect.top;
+  touchState.offsetX = offsetX;
+  touchState.offsetY = offsetY;
+
+  // Position and insert ghost
+  ghost.style.left = (touch.clientX - offsetX) + 'px';
+  ghost.style.top = (touch.clientY - offsetY) + 'px';
+  document.body.appendChild(ghost);
+  touchState.ghostEl = ghost;
+
+  // Fade source cards
+  cards.forEach(card => {
+    const cardEl = pileEl.querySelector(`.card[data-suit="${card.suit}"][data-rank="${card.rank}"]`);
+    if (cardEl) cardEl.classList.add('dragging');
+  });
+}
+
+// ── Touch handlers ────────────────────────────────
+
+function handleTouchStart(e) {
+  const touch = e.changedTouches[0];
+  const cardEl = touch.target.closest('.card');
+  if (!cardEl || cardEl.dataset.faceUp !== '1') return;
+
+  const resolved = resolveCard(cardEl);
+  if (!resolved) return;
+
+  touchState = {
+    cards: resolved.cards,
+    source: resolved.source,
+    startX: touch.clientX,
+    startY: touch.clientY,
+    isDragging: false,
+    ghostEl: null,
+    offsetX: 0,
+    offsetY: 0,
+    currentTarget: null,
+  };
+  // Do NOT call e.preventDefault() — preserves synthetic click for taps
+}
+
+function handleTouchMove(e) {
+  if (!touchState) return;
+  const touch = e.changedTouches[0];
+
+  if (!touchState.isDragging) {
+    const dx = touch.clientX - touchState.startX;
+    const dy = touch.clientY - touchState.startY;
+    if (Math.hypot(dx, dy) < 8) return;
+    touchState.isDragging = true;
+    clearSelection();
+    createTouchGhost(touch);
+  }
+
+  e.preventDefault(); // block scroll while dragging
+
+  // Reposition ghost
+  const ghost = touchState.ghostEl;
+  if (ghost) {
+    ghost.style.left = (touch.clientX - touchState.offsetX) + 'px';
+    ghost.style.top  = (touch.clientY - touchState.offsetY) + 'px';
+  }
+
+  // Hit-test: hide ghost so elementFromPoint sees through it
+  if (ghost) ghost.style.display = 'none';
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (ghost) ghost.style.display = '';
+
+  const pileEl = el ? el.closest('.pile') : null;
+
+  // Validate drop target
+  let newTarget = null;
+  if (pileEl) {
+    const state = Game.getState();
+    if (pileEl.classList.contains('foundation')) {
+      if (touchState.cards.length === 1) {
+        const fi = Game.SUITS.indexOf(pileEl.dataset.suit);
+        if (Game.canMoveToFoundation(touchState.cards[0], state.foundations[fi])) {
+          newTarget = pileEl;
+        }
+      }
+    } else if (pileEl.classList.contains('tableau-col')) {
+      const colIndex = parseInt(pileEl.dataset.col);
+      if (Game.canMoveToTableau(touchState.cards[0], state.tableau[colIndex])) {
+        newTarget = pileEl;
+      }
+    }
+  }
+
+  // Update drag-over highlight
+  if (touchState.currentTarget && touchState.currentTarget !== newTarget) {
+    touchState.currentTarget.classList.remove('drag-over');
+  }
+  if (newTarget && newTarget !== touchState.currentTarget) {
+    newTarget.classList.add('drag-over');
+  }
+  touchState.currentTarget = newTarget;
+}
+
+function handleTouchEnd(e) {
+  if (!touchState) return;
+
+  if (!touchState.isDragging) {
+    // Treat as tap — let the synthetic click event handle it
+    touchState = null;
+    return;
+  }
+
+  // Remove ghost
+  if (touchState.ghostEl) touchState.ghostEl.remove();
+
+  // Clean up visual states
+  document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+
+  // Execute drop by bridging into existing selection/tryDrop logic
+  selection = { source: touchState.source, cards: touchState.cards };
+  if (touchState.currentTarget) {
+    tryDrop(touchState.currentTarget); // handles move, clearSelection, redraw, checkWin
+  } else {
+    clearSelection();
+  }
+
+  suppressNextClick = true;
+  touchState = null;
+  redraw();
+}
+
+function handleTouchCancel(e) {
+  if (!touchState) return;
+  if (touchState.ghostEl) touchState.ghostEl.remove();
+  document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  touchState = null;
+  redraw();
 }
 
 // ── Drag handlers ─────────────────────────────────
@@ -356,6 +555,11 @@ board.addEventListener('dragover', handleDragOver);
 board.addEventListener('dragleave', handleDragLeave);
 board.addEventListener('drop', handleDrop);
 board.addEventListener('dragend', handleDragEnd);
+
+board.addEventListener('touchstart',  handleTouchStart,  { passive: false });
+board.addEventListener('touchmove',   handleTouchMove,   { passive: false });
+board.addEventListener('touchend',    handleTouchEnd,    { passive: false });
+board.addEventListener('touchcancel', handleTouchCancel, { passive: true });
 
 // Kick off
 startNewGame();
