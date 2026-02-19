@@ -20,7 +20,14 @@
             <button id="help-btn" aria-label="Rules">?</button>
         </div>
     </div>
-    <div id="move-counter">MOVES: 0</div>
+    <div id="header-subrow">
+      <div id="draw-toggle" title="Switch draw mode">
+        <span class="draw-option" data-draw="1">DRAW 1</span>
+        <span class="draw-divider">|</span>
+        <span class="draw-option" data-draw="3">DRAW 3</span>
+      </div>
+      <div id="move-counter">MOVES: 0</div>
+    </div>
   </header>
 
   <main id="board">
@@ -90,7 +97,7 @@
               <div class="slide-arrow" style="font-size:22px;color:#2a5a8c;">↺</div>
             </div>
             <div class="slide-title">THE DRAW PILE</div>
-            <p class="slide-body">Click the face-down pile to flip a card. Play it to a column or foundation, or click again for the next card. When empty, click to recycle.</p>
+            <p class="slide-body">Click the face-down pile to flip a card. Play it to a column or foundation, or click again for the next card. When empty, click to recycle. Use DRAW 1 / DRAW 3 to switch how many cards are flipped at a time.</p>
           </div>
 
           <!-- SLIDE 4: MOVING CARDS -->
