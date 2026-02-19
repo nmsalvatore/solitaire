@@ -372,18 +372,20 @@ function handleDragEnd() {
 // ── Click handler ─────────────────────────────────
 
 function handleClick(e) {
-  if (suppressNextClick) { suppressNextClick = false; return; }
-  lastClickedCardInfo = null;
   const cardEl = e.target.closest('.card');
   const pileEl = e.target.closest('.pile');
 
-  // ── Stock click
+  // ── Stock click — always handle, even right after a drag
   if (pileEl && pileEl.id === 'stock') {
+    suppressNextClick = false;
     clearSelection();
     Game.drawFromStock();
     redraw();
     return;
   }
+
+  if (suppressNextClick) { suppressNextClick = false; return; }
+  lastClickedCardInfo = null;
 
   // ── Card click
   if (cardEl) {
