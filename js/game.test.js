@@ -482,6 +482,16 @@ test('moveToFoundation increments on success only', () => {
   assertEqual(Game.getMoveCount(), before2);
 });
 
+test('moveToFoundation with skipCount does not increment moveCount', () => {
+  const state = Game.initGame();
+  const ace = { suit: 'spades', rank: 1, faceUp: true };
+  state.waste.push(ace);
+  const before = Game.getMoveCount();
+  Game.moveToFoundation(ace, { type: 'waste' }, { skipCount: true });
+  assertEqual(Game.getMoveCount(), before, 'moveCount should not increase with skipCount');
+  assertEqual(state.foundations[0].length, 1, 'card should still move to foundation');
+});
+
 // canAutoComplete
 test('canAutoComplete returns false during normal play (face-down tableau cards)', () => {
   Game.initGame();

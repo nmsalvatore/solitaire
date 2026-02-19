@@ -141,11 +141,11 @@ function moveToTableau(cards, targetColIndex, source) {
   return true;
 }
 
-function moveToFoundation(card, source) {
+function moveToFoundation(card, source, options) {
   const fi = foundationIndex(card.suit);
   if (!canMoveToFoundation(card, state.foundations[fi])) return false;
 
-  moveCount++;
+  if (!options || !options.skipCount) moveCount++;
   _removeFromSource([card], source);
   state.foundations[fi].push(card);
   card._landAnim = true;
