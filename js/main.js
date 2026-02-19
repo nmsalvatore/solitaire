@@ -702,5 +702,8 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// Re-render on resize so JS-computed offsets match new card dimensions
+window.addEventListener('resize', () => redraw());
+
 // Kick off
 startNewGame();

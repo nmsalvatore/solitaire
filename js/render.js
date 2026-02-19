@@ -59,12 +59,12 @@ function makeCard(card) {
 
 // ── Stack layout helpers ──────────────────────────
 
-const OFFSET_FACEDOWN = 11; // px per face-down card
-const OFFSET_FACEUP = 22; // px per face-up card
-
-function stackCards(pile, cards, selection) {
+function stackCards(pile, cards, selection, cardH) {
     // Clear previous contents
     pile.innerHTML = "";
+
+    const offsetDown = cardH * 0.08;
+    const offsetUp = cardH * 0.16;
 
     let top = 0;
     cards.forEach((card, i) => {
@@ -79,19 +79,12 @@ function stackCards(pile, cards, selection) {
         pile.appendChild(el);
 
         if (i < cards.length - 1) {
-            top += card.faceUp ? OFFSET_FACEUP : OFFSET_FACEDOWN;
+            top += card.faceUp ? offsetUp : offsetDown;
         }
     });
 
     // Adjust pile min-height so column is fully clickable
     if (cards.length > 0) {
-        const lastCard = cards[cards.length - 1];
-        const cardH =
-            parseInt(
-                getComputedStyle(document.documentElement).getPropertyValue(
-                    "--card-h",
-                ),
-            ) || 140;
         pile.style.minHeight = top + cardH + "px";
     } else {
         pile.style.minHeight = "";
@@ -103,6 +96,12 @@ function stackCards(pile, cards, selection) {
 function renderGame(state, selection) {
     const { stock, waste, foundations, tableau } = state;
 
+    // Read resolved card dimensions from a rendered pile element
+    const samplePile = document.querySelector(".pile");
+    const pileStyle = getComputedStyle(samplePile);
+    const cardW = parseFloat(pileStyle.width) || 100;
+    const cardH = parseFloat(pileStyle.minHeight) || 140;
+
     // ── Stock
     const stockEl = document.getElementById("stock");
     stockEl.innerHTML = "";
@@ -111,11 +110,12 @@ function renderGame(state, selection) {
     } else {
         stockEl.classList.remove("empty");
         const ghostCount = Math.min(stock.length - 1, 2);
+        const ghostOffset = cardW * 0.03;
         for (let i = ghostCount; i >= 1; i--) {
             const ghost = document.createElement("div");
             ghost.className = "stock-ghost";
             ghost.style.top = "0";
-            ghost.style.left = `${i * 3}px`;
+            ghost.style.left = `${i * ghostOffset}px`;
             ghost.style.zIndex = String(ghostCount - i);
             stockEl.appendChild(ghost);
         }
@@ -132,11 +132,12 @@ function renderGame(state, selection) {
     wasteEl.style.minHeight = "";
     if (waste.length > 0) {
         const showCount = Math.min(waste.length, 3);
+        const wasteFan = cardW * 0.2;
         for (let i = showCount - 1; i >= 0; i--) {
             const card = waste[waste.length - 1 - i];
             const el = makeCard(card);
             el.style.top = "0";
-            el.style.left = `${i * 20}px`;
+            el.style.left = `${i * wasteFan}px`;
             el.style.zIndex = String(showCount - i);
             if (i > 0) el.style.pointerEvents = "none";
             if (i === 0 && selection && selection.cards.includes(card)) {
@@ -171,7 +172,7 @@ function renderGame(state, selection) {
     // ── Tableau
     document.querySelectorAll(".tableau-col").forEach((colEl) => {
         const colIndex = parseInt(colEl.dataset.col);
-        stackCards(colEl, tableau[colIndex], selection);
+        stackCards(colEl, tableau[colIndex], selection, cardH);
     });
 }
 
