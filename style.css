@@ -18,7 +18,7 @@
     --pile-empty: #0e2a47;
     --pile-border: #2a5a8c;
     --pile-border-red: #3a6a7c;
-    --card-back-a: #1a3399;
+    --card-back-a: #152888;
     --card-back-b: #2244aa;
     --accent: #2244aa;
     --highlight: #ffdd00;
@@ -209,13 +209,16 @@ h1 {
     width: var(--card-w);
     height: var(--card-h);
     background-color: var(--card-back-b);
-    background-image: repeating-linear-gradient(
-        45deg,
-        var(--card-back-a) 0px,
-        var(--card-back-a) 4px,
-        var(--card-back-b) 4px,
-        var(--card-back-b) 8px
-    );
+    background-image:
+        linear-gradient(45deg,
+            var(--card-back-a) 25%, transparent 25%,
+            transparent 75%, var(--card-back-a) 75%),
+        linear-gradient(45deg,
+            var(--card-back-a) 25%, transparent 25%,
+            transparent 75%, var(--card-back-a) 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 4px 4px;
+    image-rendering: pixelated;
     border: 1px solid rgba(0, 0, 0, 0.25);
     pointer-events: none;
 }
@@ -289,16 +292,19 @@ h1 {
     font-family: sans-serif;
 }
 
-/* Face-down card back */
+/* Face-down card back — pixelated checkerboard */
 .card.face-down {
     background-color: var(--card-back-b);
-    background-image: repeating-linear-gradient(
-        45deg,
-        var(--card-back-a) 0px,
-        var(--card-back-a) 4px,
-        var(--card-back-b) 4px,
-        var(--card-back-b) 8px
-    );
+    background-image:
+        linear-gradient(45deg,
+            var(--card-back-a) 25%, transparent 25%,
+            transparent 75%, var(--card-back-a) 75%),
+        linear-gradient(45deg,
+            var(--card-back-a) 25%, transparent 25%,
+            transparent 75%, var(--card-back-a) 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 4px 4px;
+    image-rendering: pixelated;
     cursor: default;
 }
 
@@ -472,13 +478,16 @@ h1 {
 
 .face-down-mini {
     background-color: var(--card-back-b);
-    background-image: repeating-linear-gradient(
-        45deg,
-        var(--card-back-a) 0px,
-        var(--card-back-a) 4px,
-        var(--card-back-b) 4px,
-        var(--card-back-b) 8px
-    );
+    background-image:
+        linear-gradient(45deg,
+            var(--card-back-a) 25%, transparent 25%,
+            transparent 75%, var(--card-back-a) 75%),
+        linear-gradient(45deg,
+            var(--card-back-a) 25%, transparent 25%,
+            transparent 75%, var(--card-back-a) 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 4px 4px;
+    image-rendering: pixelated;
     cursor: default;
 }
 
