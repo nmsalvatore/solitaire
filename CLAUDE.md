@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This is a simple Klondike Solitaire game built with HTML, CSS, and Vanilla JS.
 
 ## Running the Game
 
@@ -33,3 +33,10 @@ Three vanilla JS files are loaded as plain `<script>` tags in this order (order 
 - **Stock/waste**: `state.stock` top = last element (array used as a stack). Drawing pops from stock and pushes to waste. Recycling reverses waste back to stock.
 - **Foundation index**: `state.foundations[i]` where `i` corresponds to `SUITS` order: `['spades', 'hearts', 'diamonds', 'clubs']`.
 - **`suppressNextClick`**: A flag in main.js that prevents the click event that fires immediately after a drag-end from being misinterpreted as a card selection.
+
+## Testing
+
+- Tests are in `game.tests.js`
+- No dependencies needed for testing strategy.
+- Tests are run by opening `test.html` in the browser.
+- **IMPORTANT**: For any new feature implemented that affects game, write a test first.

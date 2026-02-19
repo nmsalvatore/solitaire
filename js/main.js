@@ -4,6 +4,10 @@
 // { source: { type, colIndex? }, cards: Card[] }
 let selection = null;
 
+// Last card resolved by handleClick — used by handleDblClick to avoid
+// relying on e.target after the DOM has been rebuilt by redraw().
+let lastClickedCardInfo = null;
+
 // ── Drag state ────────────────────────────────────
 // { cards, source, cardEls }  (cardEls: DOM nodes to mark .dragging)
 let dragState = null;
@@ -170,6 +174,7 @@ function handleDragEnd() {
 
 function handleClick(e) {
   if (suppressNextClick) { suppressNextClick = false; return; }
+  lastClickedCardInfo = null;
   const cardEl = e.target.closest('.card');
   const pileEl = e.target.closest('.pile');
 
@@ -202,6 +207,8 @@ function handleClick(e) {
     // Select / re-select
     const resolved = resolveCard(cardEl);
     if (!resolved) return;
+
+    lastClickedCardInfo = resolved;
 
     if (
       selection &&
@@ -268,14 +275,12 @@ function tryDrop(pileEl) {
 // ── Double-click: auto-move to foundation ─────────
 
 function handleDblClick(e) {
-  const cardEl = e.target.closest('.card');
-  if (!cardEl || cardEl.dataset.faceUp !== '1') return;
-
-  const resolved = resolveCard(cardEl);
-  if (!resolved || resolved.cards.length !== 1) return;
+  const info = lastClickedCardInfo;
+  lastClickedCardInfo = null;
+  if (!info || info.cards.length !== 1) return;
 
   clearSelection();
-  const moved = Game.moveToFoundation(resolved.card, resolved.source);
+  const moved = Game.moveToFoundation(info.card, info.source);
   if (moved && Game.checkWin()) showWin();
   redraw();
 }
