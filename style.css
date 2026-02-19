@@ -317,6 +317,8 @@ h1 {
     padding: 32px 36px 36px;
     width: min(600px, 90vw);
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 #help-title {
@@ -359,11 +361,19 @@ h1 {
     margin-bottom: 14px;
 }
 
+/* All slides stack in the same grid cell so the container height
+   is always the tallest slide — no resize on navigation */
+#help-slides {
+    display: grid;
+}
+
 .help-slide {
-    display: none;
+    grid-area: 1 / 1;
+    display: block;
+    visibility: hidden;
 }
 .help-slide.active {
-    display: block;
+    visibility: visible;
 }
 
 .slide-visual {
@@ -505,7 +515,8 @@ h1 {
 #help-nav {
     display: flex;
     justify-content: space-between;
-    margin-top: 14px;
+    margin-top: auto;
+    padding-top: 14px;
 }
 
 #help-prev,
