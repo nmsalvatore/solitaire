@@ -22,7 +22,7 @@ Three vanilla JS files are loaded as plain `<script>` tags in this order (order 
 
 3. **`js/main.js`** — Event handling and UI coordination. No exports. Owns `selection` state (click-to-select flow) and `dragState` (drag-and-drop flow). Calls `Game.*` to mutate state, then `redraw()` which calls `Render.renderGame`.
 
-`index.html` contains the full static HTML structure including the help modal (4-slide carousel) and win screen overlay. `style.css` contains all styles — pixel art aesthetic using the "Silkscreen" font.
+`index.html` contains the full static HTML structure including the help modal (7-slide carousel) and win screen overlay. `style.css` contains all styles — pixel art aesthetic using the "Silkscreen" font.
 
 ## Key Patterns
 

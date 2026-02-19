@@ -63,7 +63,7 @@
     <div id="help-box">
       <div id="help-title">HOW TO PLAY</div>
       <button id="help-close-btn">✕</button>
-      <div id="help-counter"><span id="help-slide-num">1</span> / 5</div>
+      <div id="help-counter"><span id="help-slide-num">1</span> / 7</div>
 
       <div id="help-slides-wrap">
         <div id="help-slides">
@@ -80,7 +80,18 @@
             <p class="slide-body">Move all cards to the 4 foundation piles, building each suit from Ace to King.</p>
           </div>
 
-          <!-- SLIDE 2: THE COLUMNS -->
+          <!-- SLIDE 2: MOVING CARDS -->
+          <div class="help-slide">
+            <div class="slide-visual">
+              <div class="mini-card black selected-mini"><span class="mc-rank">7</span><span class="mc-suit">♠</span></div>
+              <div class="slide-arrow">➡</div>
+              <div class="mini-card red"><span class="mc-rank">8</span><span class="mc-suit">♥</span></div>
+            </div>
+            <div class="slide-title">MOVING CARDS</div>
+            <p class="slide-body">Click a card to select it, then click a destination. You can also drag &amp; drop.</p>
+          </div>
+
+          <!-- SLIDE 3: THE COLUMNS -->
           <div class="help-slide">
             <div class="slide-visual">
               <div class="slide-stack">
@@ -95,7 +106,7 @@
             <p class="slide-body">Stack cards in descending rank, alternating red and black. Only Kings can fill empty columns.</p>
           </div>
 
-          <!-- SLIDE 3: THE DRAW PILE -->
+          <!-- SLIDE 4: THE DRAW PILE -->
           <div class="help-slide">
             <div class="slide-visual">
               <div class="mini-card face-down-mini"></div>
@@ -105,17 +116,6 @@
             </div>
             <div class="slide-title">THE DRAW PILE</div>
             <p class="slide-body">Click the stock to flip cards. When it's empty, click to recycle. Toggle DRAW 1 / DRAW 3 to change how many cards flip.</p>
-          </div>
-
-          <!-- SLIDE 4: MOVING CARDS -->
-          <div class="help-slide">
-            <div class="slide-visual">
-              <div class="mini-card black selected-mini"><span class="mc-rank">7</span><span class="mc-suit">♠</span></div>
-              <div class="slide-arrow">➡</div>
-              <div class="mini-card red"><span class="mc-rank">8</span><span class="mc-suit">♥</span></div>
-            </div>
-            <div class="slide-title">MOVING CARDS</div>
-            <p class="slide-body">Click a card to select it, then click a destination. You can also drag &amp; drop.</p>
           </div>
 
           <!-- SLIDE 5: STACKS & SHORTCUTS -->
@@ -133,6 +133,28 @@
             <p class="slide-body">Selecting a card grabs the whole stack below it. Double-click to auto-send a card to its foundation.</p>
           </div>
 
+          <!-- SLIDE 6: UNDO & AUTO-FINISH -->
+          <div class="help-slide">
+            <div class="slide-visual">
+              <div class="mini-btn">↩</div>
+              <div class="slide-arrow" style="font-size:22px;color:#2a5a8c;">⌘Z</div>
+            </div>
+            <div class="slide-title">UNDO &amp; AUTO-FINISH</div>
+            <p class="slide-body">Press ↩ or Ctrl+Z to undo your last move. When all cards are face-up and the draw pile is empty, the game finishes automatically.</p>
+          </div>
+
+          <!-- SLIDE 7: LAZY MODE -->
+          <div class="help-slide">
+            <div class="slide-visual">
+              <div class="mini-card black"><span class="mc-rank">7</span><span class="mc-suit">♠</span></div>
+              <div class="slide-arrow">➡</div>
+              <div class="mini-card red"><span class="mc-rank">8</span><span class="mc-suit">♥</span></div>
+              <div class="mini-pile">♠</div>
+            </div>
+            <div class="slide-title">LAZY MODE</div>
+            <p class="slide-body">Toggle LAZY to auto-move cards with a single click. The game picks the best spot — foundations first, then columns.</p>
+          </div>
+
         </div>
       </div>
 
@@ -142,6 +164,8 @@
         <button class="help-dot" data-dot="2"></button>
         <button class="help-dot" data-dot="3"></button>
         <button class="help-dot" data-dot="4"></button>
+        <button class="help-dot" data-dot="5"></button>
+        <button class="help-dot" data-dot="6"></button>
       </div>
 
       <div id="help-nav">
