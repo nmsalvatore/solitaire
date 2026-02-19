@@ -699,6 +699,111 @@ test('initGame preserves drawCount', () => {
   Game.setDrawCount(1);
 });
 
+// defensive source validation
+test('moveToFoundation rejects card not in source (foreign object)', () => {
+  const state = Game.initGame();
+  const ace = { suit: 'spades', rank: 1, faceUp: true };
+  // ace is NOT in waste — it's a detached object
+  state.foundations[0] = [];
+  const moved = Game.moveToFoundation(ace, { type: 'waste' });
+  assert(!moved, 'should reject card not actually in waste');
+});
+
+test('moveToFoundation rejects non-top tableau card and does not mutate state', () => {
+  const state = Game.initGame();
+  const ace = { suit: 'hearts', rank: 1, faceUp: true };
+  const five = { suit: 'spades', rank: 5, faceUp: true };
+  state.tableau[0] = [ace, five];
+  const fi = Game.SUITS.indexOf('hearts');
+  state.foundations[fi] = [];
+  const moved = Game.moveToFoundation(ace, { type: 'tableau', colIndex: 0 });
+  assert(!moved, 'should reject non-top tableau card');
+  assertEqual(state.tableau[0].length, 2, 'tableau should be unchanged');
+  assertEqual(state.foundations[fi].length, 0, 'foundation should be unchanged');
+});
+
+test('moveToFoundation rejects foreign card object not in source', () => {
+  const state = Game.initGame();
+  const foreign = { suit: 'hearts', rank: 1, faceUp: true };
+  const fi = Game.SUITS.indexOf('hearts');
+  state.foundations[fi] = [];
+  state.tableau[0] = [{ suit: 'clubs', rank: 9, faceUp: true }];
+  const moved = Game.moveToFoundation(foreign, { type: 'tableau', colIndex: 0 });
+  assert(!moved, 'should reject card object not in the source tableau column');
+  assertEqual(state.tableau[0].length, 1, 'tableau should be unchanged');
+  assertEqual(state.foundations[fi].length, 0, 'foundation should be unchanged');
+});
+
+test('moveToTableau rejects card not in source', () => {
+  const state = Game.initGame();
+  state.tableau[0] = [];
+  const king = { suit: 'hearts', rank: 13, faceUp: true };
+  // king is NOT actually in waste
+  const moved = Game.moveToTableau([king], 0, { type: 'waste' });
+  assert(!moved, 'should reject card not actually in waste');
+});
+
+test('moveToTableau rejects mismatched stack from tableau and does not mutate', () => {
+  const state = Game.initGame();
+  const blackKing = { suit: 'spades', rank: 13, faceUp: true };
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  const blackJack = { suit: 'clubs', rank: 11, faceUp: true };
+  state.tableau[0] = [blackKing];
+  state.tableau[1] = [redQueen, blackJack];
+  // Try moving with a fabricated cards array that doesn't match col 1's suffix
+  const fakeQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  const moved = Game.moveToTableau([fakeQueen], 0, { type: 'tableau', colIndex: 1 });
+  assert(!moved, 'should reject cards not matching source suffix by identity');
+  assertEqual(state.tableau[0].length, 1, 'target should be unchanged');
+  assertEqual(state.tableau[1].length, 2, 'source should be unchanged');
+});
+
+// undo after stock recycle
+test('undo after stock recycle restores waste and stock', () => {
+  const state = Game.initGame();
+  // Drain stock
+  while (state.stock.length > 0) {
+    Game.drawFromStock();
+  }
+  const wasteLen = state.waste.length;
+  assert(wasteLen > 0, 'waste should have cards');
+  Game.saveSnapshot();
+  Game.drawFromStock(); // recycle
+  assertEqual(state.waste.length, 0, 'waste empty after recycle');
+  assertEqual(state.stock.length, wasteLen, 'stock has recycled cards');
+  Game.undo();
+  const restored = Game.getState();
+  assertEqual(restored.waste.length, wasteLen, 'waste restored after undo');
+  assertEqual(restored.stock.length, 0, 'stock should be empty after undo');
+});
+
+// draw-3 with exactly 1 card left
+test('draw-3 with exactly 1 card remaining draws 1', () => {
+  Game.setDrawCount(3);
+  const state = Game.initGame();
+  while (state.stock.length > 1) {
+    state.stock.pop();
+  }
+  Game.drawFromStock();
+  assertEqual(state.waste.length, 1, 'waste should have 1 card');
+  assertEqual(state.stock.length, 0, 'stock should be empty');
+  Game.setDrawCount(1);
+});
+
+// findBestMove with foundation as source
+test('findBestMove from foundation finds tableau destination', () => {
+  const state = Game.initGame();
+  for (let i = 0; i < 7; i++) state.tableau[i] = [];
+  const two = { suit: 'hearts', rank: 2, faceUp: true };
+  const fi = Game.SUITS.indexOf('hearts');
+  state.foundations[fi] = [{ suit: 'hearts', rank: 1, faceUp: true }, two];
+  // Put a black 3 on col 0 so the red 2 can go there
+  state.tableau[0] = [{ suit: 'spades', rank: 3, faceUp: true }];
+  const dest = Game.findBestMove(two, { type: 'foundation' });
+  assertEqual(dest.type, 'tableau', 'should find tableau destination');
+  assertEqual(dest.colIndex, 0);
+});
+
 // checkWin edge case
 test('checkWin returns false when one foundation is incomplete', () => {
   const state = Game.initGame();

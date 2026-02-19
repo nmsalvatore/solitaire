@@ -183,7 +183,9 @@ function renderGame(state, selection) {
     });
 
     // ── Lazy toggle label
-    const lazyVal = localStorage.getItem('lazyMode') === 'on' ? 'on' : 'off';
+    let lazyVal;
+    try { lazyVal = localStorage.getItem('lazyMode') === 'on' ? 'on' : 'off'; }
+    catch { lazyVal = 'off'; }
     document.querySelectorAll('.lazy-option').forEach(el => {
         el.classList.toggle('active', el.dataset.lazy === lazyVal);
     });

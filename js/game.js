@@ -143,6 +143,7 @@ function drawFromStock() {
 function moveToTableau(cards, targetColIndex, source) {
   const targetCol = state.tableau[targetColIndex];
   if (!canMoveToTableau(cards[0], targetCol)) return false;
+  if (!_isValidSource(cards, source)) return false;
 
   moveCount++;
   _removeFromSource(cards, source);
@@ -156,6 +157,7 @@ function moveToTableau(cards, targetColIndex, source) {
 function moveToFoundation(card, source, options) {
   const fi = foundationIndex(card.suit);
   if (!canMoveToFoundation(card, state.foundations[fi])) return false;
+  if (!_isValidSource([card], source)) return false;
 
   if (!options || !options.skipCount) moveCount++;
   _removeFromSource([card], source);
@@ -166,6 +168,26 @@ function moveToFoundation(card, source, options) {
 }
 
 // ── Internal helpers ──────────────────────────────
+
+function _isValidSource(cards, source) {
+  if (source.type === 'waste') {
+    const w = state.waste;
+    return cards.length === 1 && w.length > 0 && w[w.length - 1] === cards[0];
+  } else if (source.type === 'tableau') {
+    const col = state.tableau[source.colIndex];
+    const start = col.length - cards.length;
+    if (start < 0) return false;
+    for (let i = 0; i < cards.length; i++) {
+      if (col[start + i] !== cards[i]) return false;
+    }
+    return true;
+  } else if (source.type === 'foundation') {
+    const fi = foundationIndex(cards[0].suit);
+    const f = state.foundations[fi];
+    return cards.length === 1 && f.length > 0 && f[f.length - 1] === cards[0];
+  }
+  return false;
+}
 
 function _removeFromSource(cards, source) {
   if (source.type === 'waste') {

@@ -17,8 +17,12 @@ let dragState = null;
 // Uses a timestamp so a stale flag can't eat a later genuine click.
 let suppressClickUntil = 0;
 
+// ── Storage helpers ──────────────────────────────
+function storageGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function storageSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
+
 // ── Draw count preference ────────────────────────
-const savedDraw = parseInt(localStorage.getItem('drawCount')) || 1;
+const savedDraw = parseInt(storageGet('drawCount')) || 1;
 Game.setDrawCount(savedDraw === 3 ? 3 : 1);
 
 // ── Touch state ───────────────────────────────────
@@ -30,7 +34,7 @@ let touchState = null;
 let autoCompleting = false;
 
 // ── Lazy mode state ──────────────────────────────
-let lazyMode = localStorage.getItem('lazyMode') === 'on';
+let lazyMode = storageGet('lazyMode') === 'on';
 
 // ── Helpers ───────────────────────────────────────
 
@@ -605,6 +609,7 @@ function runAutoComplete() {
 }
 
 function autoCompleteStep() {
+  if (!autoCompleting) return;
   const state = Game.getState();
 
   // Try waste top card first
@@ -748,7 +753,7 @@ document.getElementById('draw-toggle').addEventListener('click', (e) => {
   const next = parseInt(option.dataset.draw);
   if (next === Game.getDrawCount()) return;
   Game.setDrawCount(next);
-  localStorage.setItem('drawCount', next);
+  storageSet('drawCount', next);
   startNewGame();
 });
 
@@ -759,7 +764,7 @@ document.getElementById('lazy-toggle').addEventListener('click', (e) => {
   if (!option) return;
   const next = option.dataset.lazy;
   lazyMode = next === 'on';
-  localStorage.setItem('lazyMode', lazyMode ? 'on' : 'off');
+  storageSet('lazyMode', lazyMode ? 'on' : 'off');
   clearSelection();
   redraw();
 });
