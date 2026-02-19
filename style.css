@@ -52,7 +52,7 @@ header {
     display: flex;
     flex-direction: column;
     gap: calc(var(--card-w) * 0.2);
-    margin: calc(var(--card-w) * 0.3) 0;
+    margin: calc(var(--card-w) * 0.3) 0 calc(var(--card-w) * 0.5);
     width: calc(7 * var(--card-w) + 6 * var(--grid-gap));
 }
 
