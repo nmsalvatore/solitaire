@@ -30,6 +30,26 @@ function shuffle(deck) {
 // ── State ─────────────────────────────────────────
 
 let state = null;
+let snapshot = null;
+let moveCount = 0;
+
+function saveSnapshot() {
+  snapshot = { state: JSON.parse(JSON.stringify(state)), moveCount };
+}
+
+function undo() {
+  if (snapshot) {
+    state = snapshot.state;
+    moveCount = snapshot.moveCount;
+    snapshot = null;
+    return true;
+  }
+  return false;
+}
+
+function canUndo() {
+  return snapshot !== null;
+}
 
 function initGame() {
   const deck = shuffle(createDeck());
@@ -50,6 +70,9 @@ function initGame() {
     foundations: [[], [], [], []], // index matches SUITS order
     tableau,
   };
+
+  snapshot = null;
+  moveCount = 0;
 
   return state;
 }
@@ -90,6 +113,7 @@ function canMoveToTableau(card, targetCol) {
 // ── Actions ───────────────────────────────────────
 
 function drawFromStock() {
+  moveCount++;
   if (state.stock.length === 0) {
     // Flip waste back to stock
     state.stock = state.waste.reverse().map(c => ({ ...c, faceUp: false }));
@@ -108,6 +132,7 @@ function moveToTableau(cards, targetColIndex, source) {
   const targetCol = state.tableau[targetColIndex];
   if (!canMoveToTableau(cards[0], targetCol)) return false;
 
+  moveCount++;
   _removeFromSource(cards, source);
   for (const card of cards) {
     targetCol.push(card);
@@ -120,6 +145,7 @@ function moveToFoundation(card, source) {
   const fi = foundationIndex(card.suit);
   if (!canMoveToFoundation(card, state.foundations[fi])) return false;
 
+  moveCount++;
   _removeFromSource([card], source);
   state.foundations[fi].push(card);
   card._landAnim = true;
@@ -154,6 +180,11 @@ function _flipTopIfNeeded(source) {
 
 // ── Win check ─────────────────────────────────────
 
+function canAutoComplete() {
+  if (state.stock.length > 0) return false;
+  return state.tableau.every(col => col.every(c => c.faceUp));
+}
+
 function checkWin() {
   return state.foundations.every(f => f.length === 13);
 }
@@ -172,5 +203,10 @@ window.Game = {
   drawFromStock,
   moveToTableau,
   moveToFoundation,
+  getMoveCount() { return moveCount; },
+  canAutoComplete,
   checkWin,
+  saveSnapshot,
+  undo,
+  canUndo,
 };

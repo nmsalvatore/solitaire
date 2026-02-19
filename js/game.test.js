@@ -322,6 +322,201 @@ test('moveToFoundation: sequential build A through K', () => {
   }
 });
 
+// undo
+test('canUndo returns false initially', () => {
+  Game.initGame();
+  assert(!Game.canUndo(), 'canUndo should be false with no snapshot');
+});
+
+test('saveSnapshot + undo restores state after moveToFoundation', () => {
+  const state = Game.initGame();
+  const ace = { suit: 'spades', rank: 1, faceUp: true };
+  state.waste.push(ace);
+  Game.saveSnapshot();
+  Game.moveToFoundation(ace, { type: 'waste' });
+  assertEqual(state.foundations[0].length, 1, 'foundation should have ace');
+  assertEqual(state.waste.length, 0, 'waste should be empty after move');
+  Game.undo();
+  const restored = Game.getState();
+  assertEqual(restored.waste.length, 1, 'waste should have card back after undo');
+  assertEqual(restored.waste[0].suit, 'spades');
+  assertEqual(restored.waste[0].rank, 1);
+  assertEqual(restored.foundations[0].length, 0, 'foundation should be empty after undo');
+});
+
+test('undo restores stock/waste after drawFromStock', () => {
+  const state = Game.initGame();
+  const originalStockLen = state.stock.length;
+  Game.saveSnapshot();
+  Game.drawFromStock();
+  assertEqual(Game.getState().stock.length, originalStockLen - 1);
+  assertEqual(Game.getState().waste.length, 1);
+  Game.undo();
+  const restored = Game.getState();
+  assertEqual(restored.stock.length, originalStockLen, 'stock should be restored');
+  assertEqual(restored.waste.length, 0, 'waste should be restored');
+});
+
+test('canUndo returns false after undo (single-level only)', () => {
+  const state = Game.initGame();
+  Game.saveSnapshot();
+  Game.drawFromStock();
+  assert(Game.canUndo(), 'canUndo should be true after saveSnapshot');
+  Game.undo();
+  assert(!Game.canUndo(), 'canUndo should be false after undo');
+});
+
+test('undo restores moveCount', () => {
+  const state = Game.initGame();
+  Game.drawFromStock();
+  assertEqual(Game.getMoveCount(), 1, 'moveCount should be 1 after draw');
+  Game.saveSnapshot();
+  Game.drawFromStock();
+  assertEqual(Game.getMoveCount(), 2, 'moveCount should be 2 after second draw');
+  Game.undo();
+  assertEqual(Game.getMoveCount(), 1, 'moveCount should revert to 1 after undo');
+});
+
+test('undo restores state after moveToTableau', () => {
+  const state = Game.initGame();
+  const blackKing = { suit: 'spades', rank: 13, faceUp: true };
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  state.tableau[0] = [blackKing];
+  state.tableau[1] = [redQueen];
+  Game.saveSnapshot();
+  Game.moveToTableau([redQueen], 0, { type: 'tableau', colIndex: 1 });
+  assertEqual(state.tableau[0].length, 2, 'col 0 should have 2 cards after move');
+  assertEqual(state.tableau[1].length, 0, 'col 1 should be empty after move');
+  Game.undo();
+  const restored = Game.getState();
+  assertEqual(restored.tableau[0].length, 1, 'col 0 should have 1 card after undo');
+  assertEqual(restored.tableau[1].length, 1, 'col 1 should have 1 card after undo');
+  assertEqual(restored.tableau[1][0].suit, 'hearts');
+});
+
+test('undo restores flipped cards to face-down', () => {
+  const state = Game.initGame();
+  const faceDown = { suit: 'clubs', rank: 9, faceUp: false };
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  const blackKing = { suit: 'spades', rank: 13, faceUp: true };
+  state.tableau[0] = [faceDown, redQueen];
+  state.tableau[1] = [blackKing];
+  Game.saveSnapshot();
+  Game.moveToTableau([redQueen], 1, { type: 'tableau', colIndex: 0 });
+  assert(state.tableau[0][0].faceUp, 'exposed card should be face-up after move');
+  Game.undo();
+  const restored = Game.getState();
+  assertEqual(restored.tableau[0].length, 2, 'col 0 should have 2 cards after undo');
+  assert(!restored.tableau[0][0].faceUp, 'bottom card should be face-down after undo');
+  assert(restored.tableau[0][1].faceUp, 'top card should be face-up after undo');
+});
+
+test('undo after two moves only reverts the second move', () => {
+  const state = Game.initGame();
+  // Move 1: draw from stock
+  Game.saveSnapshot();
+  Game.drawFromStock();
+  const wasteAfterFirstDraw = state.waste[0];
+  // Move 2: draw again
+  Game.saveSnapshot();
+  Game.drawFromStock();
+  assertEqual(state.waste.length, 2, 'waste should have 2 cards');
+  // Undo only reverts the second draw
+  Game.undo();
+  const restored = Game.getState();
+  assertEqual(restored.waste.length, 1, 'waste should have 1 card after undo');
+  assertEqual(restored.waste[0].suit, wasteAfterFirstDraw.suit);
+  assertEqual(restored.waste[0].rank, wasteAfterFirstDraw.rank);
+  assert(!Game.canUndo(), 'canUndo should be false — only one level');
+});
+
+test('initGame clears undo history', () => {
+  Game.initGame();
+  Game.saveSnapshot();
+  Game.drawFromStock();
+  assert(Game.canUndo(), 'canUndo should be true before new game');
+  Game.initGame();
+  assert(!Game.canUndo(), 'canUndo should be false after initGame');
+});
+
+// getMoveCount
+test('getMoveCount starts at 0 after initGame', () => {
+  Game.initGame();
+  assertEqual(Game.getMoveCount(), 0);
+});
+
+test('drawFromStock increments move count', () => {
+  Game.initGame();
+  Game.drawFromStock();
+  assertEqual(Game.getMoveCount(), 1);
+});
+
+test('moveToTableau increments on success only', () => {
+  const state = Game.initGame();
+  state.tableau[0] = [];
+  const king = { suit: 'hearts', rank: 13, faceUp: true };
+  state.waste.push(king);
+  const before = Game.getMoveCount();
+  Game.moveToTableau([king], 0, { type: 'waste' });
+  assertEqual(Game.getMoveCount(), before + 1);
+  // Invalid move should not increment
+  const queen = { suit: 'hearts', rank: 12, faceUp: true };
+  state.waste.push(queen);
+  const before2 = Game.getMoveCount();
+  Game.moveToTableau([queen], 0, { type: 'waste' }); // red on red, invalid
+  assertEqual(Game.getMoveCount(), before2);
+});
+
+test('moveToFoundation increments on success only', () => {
+  const state = Game.initGame();
+  const ace = { suit: 'spades', rank: 1, faceUp: true };
+  state.waste.push(ace);
+  const before = Game.getMoveCount();
+  Game.moveToFoundation(ace, { type: 'waste' });
+  assertEqual(Game.getMoveCount(), before + 1);
+  // Invalid move should not increment
+  const three = { suit: 'spades', rank: 3, faceUp: true };
+  state.waste.push(three);
+  const before2 = Game.getMoveCount();
+  Game.moveToFoundation(three, { type: 'waste' });
+  assertEqual(Game.getMoveCount(), before2);
+});
+
+// canAutoComplete
+test('canAutoComplete returns false during normal play (face-down tableau cards)', () => {
+  Game.initGame();
+  assert(!Game.canAutoComplete(), 'should be false when tableau has face-down cards');
+});
+
+test('canAutoComplete returns true when stock is empty and all tableau cards are face-up', () => {
+  const state = Game.initGame();
+  state.stock = [];
+  state.waste = [{ suit: 'hearts', rank: 5, faceUp: true }];
+  for (let col = 0; col < 7; col++) {
+    state.tableau[col] = state.tableau[col].map(c => ({ ...c, faceUp: true }));
+  }
+  assert(Game.canAutoComplete(), 'should be true when stock empty and all tableau face-up');
+});
+
+test('canAutoComplete returns true with empty tableau columns', () => {
+  const state = Game.initGame();
+  state.stock = [];
+  state.waste = [];
+  for (let col = 0; col < 7; col++) {
+    state.tableau[col] = [];
+  }
+  assert(Game.canAutoComplete(), 'should be true when all columns are empty');
+});
+
+test('canAutoComplete returns false when stock still has cards', () => {
+  const state = Game.initGame();
+  for (let col = 0; col < 7; col++) {
+    state.tableau[col] = state.tableau[col].map(c => ({ ...c, faceUp: true }));
+  }
+  assert(state.stock.length > 0, 'stock should have cards');
+  assert(!Game.canAutoComplete(), 'should be false when stock has cards');
+});
+
 // checkWin
 test('checkWin returns false mid-game', () => {
   Game.initGame();

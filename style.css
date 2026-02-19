@@ -55,11 +55,18 @@ h1 {
     font-size: 10px;
     letter-spacing: 1px;
     color: #6a9cbf;
-    text-shadow: none;
+    text-shadow: 2px 2px #0e2a47;
+}
+
+#move-counter {
+    font-size: 10px;
+    color: #6a9cbf;
+    letter-spacing: 1px;
 }
 
 #new-game-btn,
-#play-again-btn {
+#play-again-btn,
+#undo-btn {
     font-family: "Press Start 2P", monospace;
     font-size: 11px;
     padding: 10px 14px;
@@ -74,8 +81,14 @@ h1 {
         box-shadow 0.05s;
 }
 
+#undo-btn {
+    font-family: sans-serif;
+    font-size: 16px;
+}
+
 #new-game-btn:active,
-#play-again-btn:active {
+#play-again-btn:active,
+#undo-btn:active {
     transform: translate(2px, 2px);
     box-shadow: 1px 1px 0 #000;
 }
@@ -138,6 +151,14 @@ h1 {
 }
 .foundation[data-suit="clubs"]::before {
     content: "♣";
+}
+
+#stock {
+    cursor: pointer;
+}
+
+#stock .card {
+    cursor: pointer;
 }
 
 /* Stock empty indicator */
@@ -557,7 +578,7 @@ h1 {
 #win-screen {
     position: fixed;
     inset: 0;
-    background: rgba(10, 20, 40, 0.85);
+    background: rgba(10, 20, 40, 0.55);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -586,7 +607,26 @@ h1 {
     letter-spacing: 3px;
 }
 
+#win-moves {
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 1px;
+}
+
 /* ── Animations ───────────────────────────────── */
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-8px); }
+    30% { transform: translateX(8px); }
+    45% { transform: translateX(-6px); }
+    60% { transform: translateX(6px); }
+    75% { transform: translateX(-3px); }
+    90% { transform: translateX(3px); }
+}
+.card.shake {
+    animation: shake 0.4s ease-out;
+}
 
 @keyframes flip-reveal {
     0% {
@@ -664,6 +704,7 @@ h1 {
         font-size: 8px;
     }
     #new-game-btn,
+    #undo-btn,
     #help-btn {
         font-size: 9px;
         padding: 8px 10px;
@@ -706,6 +747,7 @@ h1 {
         font-size: 7px;
     }
     #new-game-btn,
+    #undo-btn,
     #help-btn {
         font-size: 8px;
         padding: 6px 8px;

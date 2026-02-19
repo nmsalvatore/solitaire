@@ -12,8 +12,10 @@
 <body>
   <header>
     <h1>SOLITAIRE<br><span id="byline">by yess.lol</span></h1>
+    <div id="move-counter">MOVES: 0</div>
     <div>
         <button id="new-game-btn">NEW GAME</button>
+        <button id="undo-btn" aria-label="Undo">↩</button>
         <button id="help-btn" aria-label="Rules">?</button>
     </div>
   </header>
@@ -135,6 +137,7 @@
   <div id="win-screen" hidden>
     <div id="win-box">
       <div id="win-title">YOU WIN!</div>
+      <div id="win-moves"></div>
       <button id="play-again-btn">PLAY AGAIN</button>
     </div>
   </div>

@@ -22,14 +22,32 @@ let suppressClickUntil = 0;
 // { cards, source, startX, startY, isDragging, ghostEl, offsetX, offsetY, currentTarget }
 let touchState = null;
 
+// ── Auto-complete state ──────────────────────────
+let autoCompleting = false;
+
 // ── Helpers ───────────────────────────────────────
 
 function redraw() {
   Render.renderGame(Game.getState(), selection);
+  document.getElementById('move-counter').textContent = 'MOVES: ' + Game.getMoveCount();
+  if (!autoCompleting && Game.canAutoComplete()) {
+    runAutoComplete();
+  }
 }
 
 function clearSelection() {
   selection = null;
+}
+
+function shakeCards(cards) {
+  for (const card of cards) {
+    const el = document.querySelector(`.card[data-suit="${card.suit}"][data-rank="${card.rank}"]`);
+    if (!el) continue;
+    el.classList.remove('shake');
+    void el.offsetWidth;
+    el.classList.add('shake');
+    el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
+  }
 }
 
 // Given a card element, find its card object + source descriptor.
@@ -155,6 +173,7 @@ function createTouchGhost(touch) {
 // ── Touch handlers ────────────────────────────────
 
 function handleTouchStart(e) {
+  if (autoCompleting) return;
   const touch = e.changedTouches[0];
   const cardEl = touch.target.closest('.card');
   if (!cardEl || cardEl.dataset.faceUp !== '1') return;
@@ -251,8 +270,10 @@ function handleTouchEnd(e) {
   document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
 
   // Execute drop by bridging into existing selection/tryDrop logic
-  selection = { source: touchState.source, cards: touchState.cards };
-  if (touchState.currentTarget) {
+  const touchCards = touchState.cards;
+  const hadTarget = !!touchState.currentTarget;
+  selection = { source: touchState.source, cards: touchCards };
+  if (hadTarget) {
     tryDrop(touchState.currentTarget); // handles move, clearSelection, redraw, checkWin
   } else {
     clearSelection();
@@ -261,6 +282,7 @@ function handleTouchEnd(e) {
   suppressClickUntil = Date.now() + 50;
   touchState = null;
   redraw();
+  if (!hadTarget) shakeCards(touchCards);
 }
 
 function handleTouchCancel(e) {
@@ -275,6 +297,7 @@ function handleTouchCancel(e) {
 // ── Drag handlers ─────────────────────────────────
 
 function handleDragStart(e) {
+  if (autoCompleting) { e.preventDefault(); return; }
   const cardEl = e.target.closest('.card');
   if (!cardEl || cardEl.dataset.faceUp !== '1') { e.preventDefault(); return; }
 
@@ -351,11 +374,13 @@ function handleDrop(e) {
 
   if (pileEl.classList.contains('foundation')) {
     if (dragState.cards.length === 1) {
-      const moved = Game.moveToFoundation(dragState.cards[0], dragState.source);
-      if (moved && Game.checkWin()) showWin();
+      Game.saveSnapshot();
+      Game.moveToFoundation(dragState.cards[0], dragState.source);
+      if (Game.checkWin()) showWin();
     }
   } else if (pileEl.classList.contains('tableau-col')) {
     const colIndex = parseInt(pileEl.dataset.col);
+    Game.saveSnapshot();
     Game.moveToTableau(dragState.cards, colIndex, dragState.source);
   }
 
@@ -364,17 +389,21 @@ function handleDrop(e) {
   redraw();
 }
 
-function handleDragEnd() {
+function handleDragEnd(e) {
+  const droppedCards = dragState ? dragState.cards : null;
+  const didDrop = e.dataTransfer.dropEffect !== 'none';
   dragState = null;
   document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
   document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
   suppressClickUntil = Date.now() + 50;
   redraw();
+  if (!didDrop && droppedCards) shakeCards(droppedCards);
 }
 
 // ── Click handler ─────────────────────────────────
 
 function handleClick(e) {
+  if (autoCompleting) return;
   const cardEl = e.target.closest('.card');
   const pileEl = e.target.closest('.pile');
 
@@ -382,6 +411,7 @@ function handleClick(e) {
   if (pileEl && pileEl.id === 'stock') {
     suppressClickUntil = 0;
     clearSelection();
+    Game.saveSnapshot();
     Game.drawFromStock();
     redraw();
     return;
@@ -449,7 +479,19 @@ function handleClick(e) {
   if (pileEl) {
     if (selection) {
       if (tryDrop(pileEl)) return;
+      const shakeTargets = selection.cards;
+      clearSelection();
+      redraw();
+      shakeCards(shakeTargets);
+      return;
     }
+    clearSelection();
+    redraw();
+    return;
+  }
+
+  // Clicking empty board space deselects
+  if (selection) {
     clearSelection();
     redraw();
   }
@@ -464,13 +506,24 @@ function tryDrop(pileEl) {
   // Foundation drop
   if (pileEl.classList.contains('foundation')) {
     if (selection.cards.length !== 1) {
+      const shakeTargets = selection.cards;
       clearSelection();
       redraw();
+      shakeCards(shakeTargets);
       return true; // consumed click, invalid move
     }
-    const moved = Game.moveToFoundation(selection.cards[0], selection.source);
+    const card = selection.cards[0];
+    const fi = Game.foundationIndex(card.suit);
+    if (!Game.canMoveToFoundation(card, state.foundations[fi])) {
+      clearSelection();
+      redraw();
+      shakeCards([card]);
+      return true;
+    }
+    Game.saveSnapshot();
+    Game.moveToFoundation(card, selection.source);
     clearSelection();
-    if (moved && Game.checkWin()) showWin();
+    if (Game.checkWin()) showWin();
     redraw();
     return true;
   }
@@ -478,13 +531,14 @@ function tryDrop(pileEl) {
   // Tableau drop
   if (pileEl.classList.contains('tableau-col')) {
     const colIndex = parseInt(pileEl.dataset.col);
-    const moved = Game.moveToTableau(selection.cards, colIndex, selection.source);
-    if (moved) {
-      clearSelection();
-      redraw();
-      return true;
+    if (!Game.canMoveToTableau(selection.cards[0], state.tableau[colIndex])) {
+      return false; // invalid move → fall through to select the clicked card
     }
-    return false; // invalid move → fall through to select the clicked card
+    Game.saveSnapshot();
+    Game.moveToTableau(selection.cards, colIndex, selection.source);
+    clearSelection();
+    redraw();
+    return true;
   }
 
   return false;
@@ -501,14 +555,58 @@ function autoMoveToFoundation(info) {
   }
 
   clearSelection();
+  Game.saveSnapshot();
   const moved = Game.moveToFoundation(card, info.source);
   if (moved && Game.checkWin()) showWin();
   redraw();
 }
 
+// ── Auto-complete ─────────────────────────────────
+
+function runAutoComplete() {
+  autoCompleting = true;
+  clearSelection();
+  autoCompleteStep();
+}
+
+function autoCompleteStep() {
+  const state = Game.getState();
+
+  // Try waste top card first
+  if (state.waste.length > 0) {
+    const card = state.waste[state.waste.length - 1];
+    const fi = Game.foundationIndex(card.suit);
+    if (Game.canMoveToFoundation(card, state.foundations[fi])) {
+      Game.moveToFoundation(card, { type: 'waste' });
+      Render.renderGame(Game.getState(), null);
+      setTimeout(autoCompleteStep, 80);
+      return;
+    }
+  }
+
+  // Try tableau column top cards
+  for (let ci = 0; ci < 7; ci++) {
+    const col = state.tableau[ci];
+    if (col.length === 0) continue;
+    const card = col[col.length - 1];
+    const fi = Game.foundationIndex(card.suit);
+    if (Game.canMoveToFoundation(card, state.foundations[fi])) {
+      Game.moveToFoundation(card, { type: 'tableau', colIndex: ci });
+      Render.renderGame(Game.getState(), null);
+      setTimeout(autoCompleteStep, 80);
+      return;
+    }
+  }
+
+  // No more moves — done
+  autoCompleting = false;
+  if (Game.checkWin()) showWin();
+}
+
 // ── Win screen ────────────────────────────────────
 
 function showWin() {
+  document.getElementById('win-moves').textContent = `${Game.getMoveCount()} MOVES`;
   document.getElementById('win-screen').removeAttribute('hidden');
 }
 
@@ -519,6 +617,7 @@ function hideWin() {
 // ── Init ──────────────────────────────────────────
 
 function startNewGame() {
+  autoCompleting = false;
   clearSelection();
   hideWin();
   Game.initGame();
@@ -581,6 +680,27 @@ board.addEventListener('touchstart',  handleTouchStart,  { passive: false });
 board.addEventListener('touchmove',   handleTouchMove,   { passive: false });
 board.addEventListener('touchend',    handleTouchEnd,    { passive: false });
 board.addEventListener('touchcancel', handleTouchCancel, { passive: true });
+
+document.getElementById('undo-btn').addEventListener('click', () => {
+  if (autoCompleting) return;
+  if (Game.canUndo()) {
+    Game.undo();
+    clearSelection();
+    redraw();
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    e.preventDefault();
+    if (autoCompleting) return;
+    if (Game.canUndo()) {
+      Game.undo();
+      clearSelection();
+      redraw();
+    }
+  }
+});
 
 // Kick off
 startNewGame();
