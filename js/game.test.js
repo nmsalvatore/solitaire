@@ -130,6 +130,12 @@ test('canMoveToTableau: face-down top card rejected', () => {
   assert(!Game.canMoveToTableau(jack, [faceDown]));
 });
 
+test('canMoveToTableau: correct color alternation but wrong rank rejected', () => {
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  const blackTen = { suit: 'spades', rank: 10, faceUp: true };
+  assert(!Game.canMoveToTableau(blackTen, [redQueen]), 'should reject 10 on Queen even with correct colors');
+});
+
 // drawFromStock
 test('drawFromStock moves top stock card to waste', () => {
   const state = Game.initGame();
@@ -581,6 +587,16 @@ test('draw-3 partial: draws only remaining cards when stock has fewer than 3', (
   Game.setDrawCount(1);
 });
 
+test('draw-3 appends to existing waste cards', () => {
+  Game.setDrawCount(3);
+  const state = Game.initGame();
+  Game.drawFromStock();
+  assertEqual(state.waste.length, 3, 'waste should have 3 cards after first draw');
+  Game.drawFromStock();
+  assertEqual(state.waste.length, 6, 'waste should have 6 cards after second draw');
+  Game.setDrawCount(1);
+});
+
 test('draw-3 recycle: waste reverses back to stock when stock is empty', () => {
   Game.setDrawCount(3);
   const state = Game.initGame();
@@ -596,6 +612,36 @@ test('draw-3 recycle: waste reverses back to stock when stock is empty', () => {
   assertEqual(state.stock.length, wasteLen, 'stock should have all recycled cards');
   assert(state.stock.every(c => !c.faceUp), 'recycled cards should be face-down');
   Game.setDrawCount(1);
+});
+
+// setDrawCount / getDrawCount
+test('setDrawCount and getDrawCount round-trip', () => {
+  Game.setDrawCount(3);
+  assertEqual(Game.getDrawCount(), 3, 'should return 3 after setting 3');
+  Game.setDrawCount(1);
+  assertEqual(Game.getDrawCount(), 1, 'should return 1 after setting 1');
+});
+
+test('initGame preserves drawCount', () => {
+  Game.setDrawCount(3);
+  Game.initGame();
+  assertEqual(Game.getDrawCount(), 3, 'drawCount should survive initGame');
+  Game.setDrawCount(1);
+});
+
+// checkWin edge case
+test('checkWin returns false when one foundation is incomplete', () => {
+  const state = Game.initGame();
+  const SUITS = ['spades', 'hearts', 'diamonds', 'clubs'];
+  SUITS.forEach((suit, i) => {
+    state.foundations[i] = [];
+    for (let rank = 1; rank <= 13; rank++) {
+      state.foundations[i].push({ suit, rank, faceUp: true });
+    }
+  });
+  // Remove the last card from one foundation
+  state.foundations[2].pop();
+  assert(!Game.checkWin(), 'should be false when one foundation has only 12 cards');
 });
 
 // ── Summary ───────────────────────────────────────
