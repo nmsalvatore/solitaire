@@ -684,7 +684,7 @@ h1 {
 #win-title {
     font-size: var(--fs-modal-xl);
     color: var(--black);
-    text-shadow: 3px 3px 0 var(--red);
+    text-shadow: 2px 2px 0 white;
     letter-spacing: 3px;
 }
 
