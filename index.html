@@ -12,24 +12,26 @@
 </head>
 <body>
   <header>
-    <div id="header-controls">
-        <h1>Yess, Solitaire!</h1>
-        <div id="header-buttons">
-            <button id="undo-btn" aria-label="Undo">↩</button>
-            <button id="new-game-btn">NEW GAME</button>
-            <button id="help-btn" aria-label="Rules">?</button>
+    <div id="header-left">
+      <h1>Yess, Solitaire!</h1>
+      <div id="header-toggles">
+        <div id="lazy-toggle" title="Single-click auto-move">
+          <span class="lazy-option" data-lazy="off">SISYPHUS</span>
+          <span class="draw-divider">|</span>
+          <span class="lazy-option" data-lazy="on">LAZY</span>
         </div>
-    </div>
-    <div id="header-subrow">
-      <div id="draw-toggle" title="Switch draw mode">
-        <span class="draw-option" data-draw="1">DRAW 1</span>
-        <span class="draw-divider">|</span>
-        <span class="draw-option" data-draw="3">DRAW 3</span>
+        <div id="draw-toggle" title="Switch draw mode">
+          <span class="draw-option" data-draw="1">DRAW 1</span>
+          <span class="draw-divider">|</span>
+          <span class="draw-option" data-draw="3">DRAW 3</span>
+        </div>
       </div>
-      <div id="lazy-toggle" title="Single-click auto-move">
-        <span class="lazy-option" data-lazy="off">LAZY OFF</span>
-        <span class="draw-divider">|</span>
-        <span class="lazy-option" data-lazy="on">LAZY ON</span>
+    </div>
+    <div id="header-right">
+      <div id="header-buttons">
+          <button id="undo-btn" aria-label="Undo">↩</button>
+          <button id="new-game-btn">NEW GAME</button>
+          <button id="help-btn" aria-label="Rules">?</button>
       </div>
       <div id="move-counter">MOVES: 0</div>
     </div>
