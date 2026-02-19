@@ -374,14 +374,20 @@ function handleDrop(e) {
 
   if (pileEl.classList.contains('foundation')) {
     if (dragState.cards.length === 1) {
-      Game.saveSnapshot();
-      Game.moveToFoundation(dragState.cards[0], dragState.source);
-      if (Game.checkWin()) showWin();
+      const card = dragState.cards[0];
+      const fi = Game.foundationIndex(card.suit);
+      if (Game.canMoveToFoundation(card, Game.getState().foundations[fi])) {
+        Game.saveSnapshot();
+        Game.moveToFoundation(card, dragState.source);
+        if (Game.checkWin()) showWin();
+      }
     }
   } else if (pileEl.classList.contains('tableau-col')) {
     const colIndex = parseInt(pileEl.dataset.col);
-    Game.saveSnapshot();
-    Game.moveToTableau(dragState.cards, colIndex, dragState.source);
+    if (Game.canMoveToTableau(dragState.cards[0], Game.getState().tableau[colIndex])) {
+      Game.saveSnapshot();
+      Game.moveToTableau(dragState.cards, colIndex, dragState.source);
+    }
   }
 
   dragState = null;
@@ -577,7 +583,7 @@ function autoCompleteStep() {
     const card = state.waste[state.waste.length - 1];
     const fi = Game.foundationIndex(card.suit);
     if (Game.canMoveToFoundation(card, state.foundations[fi])) {
-      Game.moveToFoundation(card, { type: 'waste' });
+      Game.moveToFoundation(card, { type: 'waste' }, { skipCount: true });
       Render.renderGame(Game.getState(), null);
       setTimeout(autoCompleteStep, 80);
       return;
@@ -591,7 +597,7 @@ function autoCompleteStep() {
     const card = col[col.length - 1];
     const fi = Game.foundationIndex(card.suit);
     if (Game.canMoveToFoundation(card, state.foundations[fi])) {
-      Game.moveToFoundation(card, { type: 'tableau', colIndex: ci });
+      Game.moveToFoundation(card, { type: 'tableau', colIndex: ci }, { skipCount: true });
       Render.renderGame(Game.getState(), null);
       setTimeout(autoCompleteStep, 80);
       return;
