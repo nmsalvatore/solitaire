@@ -50,11 +50,9 @@ body {
 /* ── Header ─────────────────────────────────────── */
 header {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    flex-direction: column;
     gap: calc(var(--card-w) * 0.2);
-    margin: calc(var(--card-w) * 0.3) 0 calc(var(--card-w) * 0.2);
-    margin-bottom: 2rem;
+    margin: calc(var(--card-w) * 0.3) 0;
     width: calc(7 * var(--card-w) + 6 * var(--grid-gap));
 }
 
@@ -66,7 +64,7 @@ h1 {
 }
 
 #byline {
-    font-size: calc(var(--card-w) * 0.1);
+    font-size: calc(var(--card-w) * 0.12);
     letter-spacing: 1px;
     color: var(--text-secondary);
     text-shadow: 2px 2px var(--pile-empty);
@@ -74,22 +72,22 @@ h1 {
 
 #header-controls {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
+    justify-content: space-between;
     gap: calc(var(--card-w) * 0.08);
 }
 
 #header-buttons {
     display: flex;
     align-items: center;
-    gap: calc(var(--card-w) * 0.1);
-    margin-bottom: calc(var(--card-w) * 0.1);
+    gap: calc(var(--card-w) * 0.12);
 }
 
 #move-counter {
-    font-size: calc(var(--card-w) * 0.1);
+    font-size: calc(var(--card-w) * 0.12);
     color: var(--text-secondary);
     letter-spacing: 1px;
+    text-align: right;
 }
 
 #new-game-btn,
@@ -97,7 +95,7 @@ h1 {
 #undo-btn,
 #help-btn {
     font-family: "Press Start 2P", monospace;
-    font-size: calc(var(--card-w) * 0.11);
+    font-size: calc(var(--card-w) * 0.12);
     padding: calc(var(--card-w) * 0.1) calc(var(--card-w) * 0.14);
     background: var(--card-face);
     color: var(--black);
