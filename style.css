@@ -33,6 +33,26 @@
     --card-h: calc(var(--card-w) * 1.4);
     --grid-gap: calc(var(--card-w) * 0.1);
     --body-pad: calc(var(--card-w) * 0.12);
+
+    /* Font sizes — game board (card-w relative) */
+    --fs-sm: calc(var(--card-w) * 0.15);
+    --fs-md: calc(var(--card-w) * 0.2);
+    --fs-lg: calc(var(--card-w) * 0.28);
+    --fs-icon: calc(var(--card-w) * 0.36);
+    --fs-suit: calc(var(--card-w) * 0.42);
+
+    /* Font sizes — modals (Silkscreen 7px-base multiples) */
+    --fs-modal-sm: 14px;
+    --fs-modal-md: 18px;
+    --fs-modal-lg: 20px;
+    --fs-modal-xl: 26px;
+
+    /* Spacing */
+    --sp-xs: 8px;
+    --sp-sm: 12px;
+    --sp-md: 16px;
+    --sp-lg: 24px;
+    --sp-xl: 36px;
 }
 
 body {
@@ -57,7 +77,7 @@ header {
 }
 
 h1 {
-    font-size: calc(var(--card-w) * 0.28);
+    font-size: var(--fs-lg);
     color: var(--card-face);
     text-shadow: 2px 2px 0 var(--shadow);
 }
@@ -76,7 +96,7 @@ h1 {
 }
 
 #move-counter {
-    font-size: calc(var(--card-w) * 0.15);
+    font-size: var(--fs-sm);
     color: var(--text-secondary);
     letter-spacing: 1px;
     text-align: right;
@@ -87,7 +107,7 @@ h1 {
 #undo-btn,
 #help-btn {
     font-family: "Silkscreen", monospace;
-    font-size: calc(var(--card-w) * 0.15);
+    font-size: var(--fs-sm);
     padding: calc(var(--card-w) * 0.1) calc(var(--card-w) * 0.14);
     background: var(--card-face);
     color: var(--black);
@@ -98,11 +118,6 @@ h1 {
     transition:
         transform 0.05s,
         box-shadow 0.05s;
-}
-
-#undo-btn {
-    font-size: calc(var(--card-w) * 0.22);
-    padding: calc(var(--card-w) * 0.05) calc(var(--card-w) * 0.12);
 }
 
 #new-game-btn:active,
@@ -153,7 +168,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: calc(var(--card-w) * 0.35);
+    font-size: var(--fs-icon);
     color: var(--pile-border);
     pointer-events: none;
 }
@@ -189,7 +204,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: calc(var(--card-w) * 0.44);
+    font-size: var(--fs-icon);
     color: var(--pile-border);
     pointer-events: none;
     font-family: sans-serif;
@@ -268,7 +283,7 @@ h1 {
 .card .rank-tl,
 .card .rank-br {
     position: absolute;
-    font-size: calc(var(--card-w) * 0.19);
+    font-size: var(--fs-md);
     line-height: 1;
     padding: calc(var(--card-w) * 0.04);
 }
@@ -289,7 +304,7 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: calc(var(--card-w) * 0.42);
+    font-size: var(--fs-suit);
     line-height: 1;
     font-family: sans-serif;
 }
@@ -366,7 +381,7 @@ h1 {
     background: var(--card-face);
     border: 4px solid var(--black);
     box-shadow: 6px 6px 0 var(--shadow);
-    padding: 32px 36px 36px;
+    padding: var(--sp-xl);
     width: min(600px, 90vw);
     position: relative;
     display: flex;
@@ -374,16 +389,16 @@ h1 {
 }
 
 #help-title {
-    font-size: 20px;
+    font-size: var(--fs-modal-lg);
     color: var(--black);
     text-shadow: 2px 2px 0 white;
     letter-spacing: 2px;
-    margin-bottom: 36px;
+    margin-bottom: var(--sp-lg);
 }
 
 #help-close-btn {
     font-family: "Silkscreen", monospace;
-    font-size: 14px;
+    font-size: var(--fs-modal-sm);
     position: absolute;
     top: 16px;
     right: 16px;
@@ -407,10 +422,10 @@ h1 {
 
 /* ── Help slider ─────────────────────────────────── */
 #help-counter {
-    font-size: 13px;
+    font-size: var(--fs-modal-sm);
     color: var(--accent);
     letter-spacing: 1px;
-    margin-bottom: 14px;
+    margin-bottom: var(--sp-sm);
 }
 
 /* All slides stack in the same grid cell so the container height
@@ -433,22 +448,22 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: var(--sp-xs);
     height: 144px;
     background: var(--pile-empty);
     border: 2px solid var(--pile-border);
-    margin-bottom: 24px;
+    margin-bottom: var(--sp-lg);
 }
 
 .slide-title {
-    font-size: 18px;
+    font-size: var(--fs-modal-md);
     color: var(--accent);
     letter-spacing: 2px;
-    margin-bottom: 12px;
+    margin-bottom: var(--sp-sm);
 }
 
 .slide-body {
-    font-size: 14px;
+    font-size: var(--fs-modal-sm);
     color: var(--black);
     line-height: 2.2;
 }
@@ -558,8 +573,8 @@ h1 {
 #help-dots {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 36px;
+    gap: var(--sp-xs);
+    margin-top: var(--sp-xl);
 }
 
 .help-dot {
@@ -581,14 +596,14 @@ h1 {
     display: flex;
     justify-content: space-between;
     margin-top: auto;
-    padding-top: 14px;
+    padding-top: var(--sp-md);
 }
 
 #help-prev,
 #help-next {
     font-family: "Silkscreen", monospace;
-    font-size: 14px;
-    padding: 10px 14px;
+    font-size: var(--fs-modal-sm);
+    padding: var(--sp-xs) var(--sp-sm);
     background: var(--card-face);
     color: var(--black);
     border: 3px solid var(--black);
@@ -631,22 +646,22 @@ h1 {
     background: var(--card-face);
     border: 4px solid var(--black);
     box-shadow: 6px 6px 0 var(--shadow);
-    padding: 40px 48px;
+    padding: var(--sp-xl) 48px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 28px;
+    gap: var(--sp-lg);
 }
 
 #win-title {
-    font-size: 26px;
+    font-size: var(--fs-modal-xl);
     color: var(--black);
     text-shadow: 3px 3px 0 var(--red);
     letter-spacing: 3px;
 }
 
 #win-moves {
-    font-size: 14px;
+    font-size: var(--fs-modal-sm);
     color: var(--text-muted);
     letter-spacing: 1px;
 }
