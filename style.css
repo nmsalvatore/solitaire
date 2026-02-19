@@ -79,6 +79,7 @@ h1 {
     font-size: var(--fs-lg);
     color: var(--card-face);
     text-shadow: 2px 2px 0 var(--shadow);
+    margin-bottom: var(--sp-xs);
 }
 
 #header-left {
