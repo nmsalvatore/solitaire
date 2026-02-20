@@ -56,7 +56,7 @@ body {
     background-color: var(--bg);
     font-family: "Silkscreen", monospace;
     color: var(--text);
-    min-height: 100vh;
+    min-height: 100dvh;
     padding: calc(var(--body-pad) + env(safe-area-inset-top))
         calc(var(--body-pad) + env(safe-area-inset-right)) var(--body-pad)
         calc(var(--body-pad) + env(safe-area-inset-left));
