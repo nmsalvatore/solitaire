@@ -70,24 +70,24 @@ body {
 /* ── Header ─────────────────────────────────────── */
 header {
     display: flex;
-    align-items: stretch;
-    justify-content: space-between;
+    flex-direction: column;
     margin: calc(var(--card-w) * 0.5) 0;
     width: calc(7 * var(--card-w) + 6 * var(--grid-gap));
     user-select: none;
+    gap: var(--sp-md);
 }
 
 h1 {
     font-size: var(--fs-lg);
     color: var(--card-face);
-    margin-bottom: var(--sp-sm);
     line-height: 1;
 }
 
-#header-left {
+#header-top,
+#header-bottom {
     display: flex;
-    flex-direction: column;
-    gap: calc(var(--card-w) * 0.1);
+    justify-content: space-between;
+    align-items: center;
 }
 
 #header-toggles {
@@ -96,20 +96,13 @@ h1 {
     gap: calc(var(--card-w) * 0.04);
 }
 
-#header-right {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-
-#header-top-buttons {
+#header-buttons {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-#header-bottom-group {
+#header-game-controls {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -141,6 +134,11 @@ h1 {
     letter-spacing: 1px;
     cursor: pointer;
     border-radius: 6px;
+}
+
+#new-game-btn:hover,
+#help-btn:hover {
+    background: var(--accent);
 }
 
 #play-again-btn {
