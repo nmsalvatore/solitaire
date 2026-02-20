@@ -134,18 +134,13 @@ h1 {
 #help-btn {
     font-family: "Silkscreen", monospace;
     font-size: var(--fs-sm);
-    color: var(--bg);
-    background: var(--text-secondary);
+    color: var(--card-face);
+    background: var(--card-back-b);
     border: none;
     padding: calc(var(--card-w) * 0.01) calc(var(--card-w) * 0.12);
     letter-spacing: 1px;
     cursor: pointer;
     border-radius: 6px;
-}
-
-#new-game-btn:hover,
-#help-btn:hover {
-    background: #89b5d4;
 }
 
 #play-again-btn {
@@ -161,7 +156,7 @@ h1 {
     font-family: "Silkscreen", monospace;
     font-size: var(--fs-xs);
     color: var(--bg);
-    background: var(--accent);
+    background: var(--text-secondary);
     border: none;
     padding: calc(var(--card-w) * 0.01) calc(var(--card-w) * 0.12);
     letter-spacing: 1px;
@@ -661,7 +656,7 @@ h1 {
 
 .mini-btn {
     padding: 6px 12px;
-    background: var(--accent);
+    background: var(--text-secondary);
     border: none;
     border-radius: 6px;
     display: flex;
