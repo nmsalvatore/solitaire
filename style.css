@@ -992,8 +992,8 @@ body[data-theme="black"] {
     --pile-empty: #242424;
     --pile-border: #5a5a5a;
     --pile-border-red: #645454;
-    --card-back-a: #3a3a3a;
-    --card-back-b: #4a4a4a;
+    --card-back-a: #484848;
+    --card-back-b: #585858;
     --accent: #888888;
     --text-secondary: #aaaaaa;
     --overlay: rgba(0, 0, 0, 0.55);
