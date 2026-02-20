@@ -13,6 +13,7 @@
     <meta property="og:description" content="A classic Klondike Solitaire card game with a pixel art aesthetic. Play free in your browser.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://solitaire.yess.lol/">
+    <meta name="theme-color" content="#1a3a5c">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -32,7 +33,7 @@
                     <span class="draw-divider">|</span>
                     <button class="lazy-option" data-lazy="on">LAZY</button>
                 </div>
-                <div id="move-counter">MOVES: 0</div>
+                <div id="move-counter" aria-live="polite">MOVES: 0</div>
             </div>
             <div class="row">
                 <div id="draw-toggle" role="radiogroup" aria-label="Draw count" title="Switch draw mode">
@@ -185,6 +186,7 @@
         </div>
     </div>
 
+    <noscript>JavaScript is required to play this game.</noscript>
     <script src="js/game.js"></script>
     <script src="js/render.js"></script>
     <script src="js/main.js"></script>
