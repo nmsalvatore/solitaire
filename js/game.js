@@ -124,7 +124,7 @@ function getDrawCount() {
 }
 
 function drawFromStock() {
-  if (state.stock.length === 0 && state.waste.length === 0) return;
+  if (state.stock.length === 0 && state.waste.length === 0) return false;
   moveCount++;
   if (state.stock.length === 0) {
     // Flip waste back to stock
@@ -138,6 +138,7 @@ function drawFromStock() {
       state.waste.push(card);
     }
   }
+  return true;
 }
 
 // Move cards from source to tableau column
@@ -270,6 +271,19 @@ function checkWin() {
   return state.foundations.every(f => f.length === 13);
 }
 
+function consumeAnimations() {
+  const allCards = [
+    ...state.waste,
+    ...state.stock,
+    ...state.foundations.flat(),
+    ...state.tableau.flat(),
+  ];
+  for (const card of allCards) {
+    delete card._flipAnim;
+    delete card._landAnim;
+  }
+}
+
 // ── Exports (globals, no module system) ───────────
 // Attached to window so render.js / main.js can use them.
 
@@ -294,4 +308,5 @@ window.Game = {
   saveSnapshot,
   undo,
   canUndo,
+  consumeAnimations,
 };

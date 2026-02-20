@@ -961,6 +961,60 @@ test('undo history is capped at HISTORY_LIMIT', () => {
   assertEqual(undoCount, LIMIT, `should only be able to undo ${LIMIT} times`);
 });
 
+// consumeAnimations
+test('moveToFoundation sets _landAnim on card', () => {
+  const state = Game.initGame();
+  const ace = { suit: 'spades', rank: 1, faceUp: true };
+  state.waste.push(ace);
+  Game.moveToFoundation(ace, { type: 'waste' });
+  assert(ace._landAnim === true, 'card should have _landAnim after moveToFoundation');
+});
+
+test('consumeAnimations clears _landAnim from foundation cards', () => {
+  const state = Game.initGame();
+  const ace = { suit: 'spades', rank: 1, faceUp: true };
+  state.waste.push(ace);
+  Game.moveToFoundation(ace, { type: 'waste' });
+  Game.consumeAnimations();
+  assert(!ace._landAnim, '_landAnim should be cleared after consumeAnimations');
+});
+
+test('consumeAnimations clears _flipAnim from newly exposed tableau card', () => {
+  const state = Game.initGame();
+  const faceDown = { suit: 'clubs', rank: 5, faceUp: false };
+  const ace = { suit: 'hearts', rank: 1, faceUp: true };
+  state.tableau[0] = [faceDown, ace];
+  Game.moveToFoundation(ace, { type: 'tableau', colIndex: 0 });
+  assert(faceDown._flipAnim === true, 'exposed card should have _flipAnim');
+  Game.consumeAnimations();
+  assert(!faceDown._flipAnim, '_flipAnim should be cleared after consumeAnimations');
+});
+
+test('consumeAnimations is safe to call with no animations pending', () => {
+  Game.initGame();
+  Game.consumeAnimations(); // should not throw
+});
+
+// drawFromStock returns false on no-op
+test('drawFromStock returns false when stock and waste are both empty', () => {
+  const state = Game.initGame();
+  state.stock = [];
+  state.waste = [];
+  assertEqual(Game.drawFromStock(), false, 'should return false on no-op');
+});
+
+test('drawFromStock returns true when it draws a card', () => {
+  Game.initGame();
+  assertEqual(Game.drawFromStock(), true, 'should return true on successful draw');
+});
+
+test('drawFromStock returns true when it recycles waste', () => {
+  const state = Game.initGame();
+  while (state.stock.length > 0) Game.drawFromStock();
+  assert(state.waste.length > 0, 'waste should have cards');
+  assertEqual(Game.drawFromStock(), true, 'should return true on recycle');
+});
+
 // ── Summary ───────────────────────────────────────
 
 window._testResults = { passed: _passed, failed: _failed };

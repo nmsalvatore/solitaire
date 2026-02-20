@@ -40,6 +40,7 @@ let lazyMode = storageGet('lazyMode') === 'on';
 
 function redraw() {
   Render.renderGame(Game.getState(), selection);
+  Game.consumeAnimations();
   document.getElementById('move-counter').textContent = 'MOVES: ' + Game.getMoveCount();
   if (!autoCompleting && Game.canAutoComplete()) {
     runAutoComplete();
@@ -436,7 +437,9 @@ function handleClick(e) {
     suppressClickUntil = 0;
     clearSelection();
     Game.saveSnapshot();
-    Game.drawFromStock();
+    if (!Game.drawFromStock()) {
+      Game.undo();
+    }
     redraw();
     return;
   }
@@ -635,6 +638,7 @@ function autoCompleteStep() {
     if (Game.canMoveToFoundation(card, state.foundations[fi])) {
       Game.moveToFoundation(card, { type: 'waste' }, { skipCount: true });
       Render.renderGame(Game.getState(), null);
+      Game.consumeAnimations();
       setTimeout(autoCompleteStep, 80);
       return;
     }
@@ -649,6 +653,7 @@ function autoCompleteStep() {
     if (Game.canMoveToFoundation(card, state.foundations[fi])) {
       Game.moveToFoundation(card, { type: 'tableau', colIndex: ci }, { skipCount: true });
       Render.renderGame(Game.getState(), null);
+      Game.consumeAnimations();
       setTimeout(autoCompleteStep, 80);
       return;
     }
@@ -732,7 +737,7 @@ board.addEventListener('dragleave', handleDragLeave);
 board.addEventListener('drop', handleDrop);
 board.addEventListener('dragend', handleDragEnd);
 
-board.addEventListener('touchstart',  handleTouchStart,  { passive: false });
+board.addEventListener('touchstart',  handleTouchStart,  { passive: true });
 board.addEventListener('touchmove',   handleTouchMove,   { passive: false });
 board.addEventListener('touchend',    handleTouchEnd,    { passive: false });
 board.addEventListener('touchcancel', handleTouchCancel, { passive: true });

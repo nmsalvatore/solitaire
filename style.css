@@ -884,11 +884,6 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
-.card:focus-visible {
-    outline: 3px solid var(--highlight);
-    outline-offset: -1px;
-}
-
 /* ── Reduced motion ───────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

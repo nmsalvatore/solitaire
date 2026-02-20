@@ -47,11 +47,9 @@ function makeCard(card) {
 
     if (card._flipAnim) {
         el.classList.add("flip-reveal");
-        delete card._flipAnim;
     }
     if (card._landAnim) {
         el.classList.add("card-land");
-        delete card._landAnim;
     }
 
     return el;
