@@ -231,11 +231,28 @@ function _flipTopIfNeeded(source) {
 
 // ── Lazy mode (find best move) ────────────────────
 
+function _isTopOfSource(card, source) {
+  if (source.type === 'waste') {
+    const w = state.waste;
+    return w.length > 0 && w[w.length - 1] === card;
+  } else if (source.type === 'tableau') {
+    const col = state.tableau[source.colIndex];
+    return col.length > 0 && col[col.length - 1] === card;
+  } else if (source.type === 'foundation') {
+    const fi = foundationIndex(card.suit);
+    const f = state.foundations[fi];
+    return f.length > 0 && f[f.length - 1] === card;
+  }
+  return false;
+}
+
 function findBestMove(card, source) {
-  // 1. Try foundation (single card only)
-  const fi = foundationIndex(card.suit);
-  if (canMoveToFoundation(card, state.foundations[fi])) {
-    return { type: 'foundation', suit: card.suit };
+  // 1. Try foundation (single card only — card must be top of its source)
+  if (_isTopOfSource(card, source)) {
+    const fi = foundationIndex(card.suit);
+    if (canMoveToFoundation(card, state.foundations[fi])) {
+      return { type: 'foundation', suit: card.suit };
+    }
   }
 
   // 2. Try non-empty tableau columns
