@@ -938,6 +938,29 @@ test('drawFromStock does not increment moveCount when stock and waste are empty'
   assertEqual(Game.getMoveCount(), before, 'moveCount should not change on no-op draw');
 });
 
+// undo history is capped to prevent unbounded memory growth
+test('undo history is capped at HISTORY_LIMIT', () => {
+  const LIMIT = Game.HISTORY_LIMIT;
+  assert(LIMIT > 0, 'HISTORY_LIMIT should be exposed and positive');
+  const state = Game.initGame();
+  // Push more snapshots than the limit
+  for (let i = 0; i < LIMIT + 50; i++) {
+    Game.saveSnapshot();
+    Game.drawFromStock();
+    // Refill stock to keep drawing
+    if (state.stock.length === 0 && state.waste.length === 0) {
+      state.stock = [{ suit: 'spades', rank: 1, faceUp: false }];
+    }
+  }
+  // Undo should work at most LIMIT times
+  let undoCount = 0;
+  while (Game.canUndo()) {
+    Game.undo();
+    undoCount++;
+  }
+  assertEqual(undoCount, LIMIT, `should only be able to undo ${LIMIT} times`);
+});
+
 // ── Summary ───────────────────────────────────────
 
 window._testResults = { passed: _passed, failed: _failed };

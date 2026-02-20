@@ -185,6 +185,7 @@ function createTouchGhost(touch) {
 
 function handleTouchStart(e) {
   if (autoCompleting) return;
+  if (touchState) return; // ignore additional fingers while one is active
   const touch = e.changedTouches[0];
   const cardEl = touch.target.closest('.card');
   if (!cardEl || cardEl.dataset.faceUp !== '1') return;
@@ -193,6 +194,7 @@ function handleTouchStart(e) {
   if (!resolved) return;
 
   touchState = {
+    touchId: touch.identifier,
     cards: resolved.cards,
     source: resolved.source,
     startX: touch.clientX,
@@ -208,7 +210,8 @@ function handleTouchStart(e) {
 
 function handleTouchMove(e) {
   if (!touchState) return;
-  const touch = e.changedTouches[0];
+  const touch = Array.from(e.changedTouches).find(t => t.identifier === touchState.touchId);
+  if (!touch) return;
 
   if (!touchState.isDragging) {
     const dx = touch.clientX - touchState.startX;
@@ -266,6 +269,8 @@ function handleTouchMove(e) {
 
 function handleTouchEnd(e) {
   if (!touchState) return;
+  const touch = Array.from(e.changedTouches).find(t => t.identifier === touchState.touchId);
+  if (!touch) return;
 
   if (!touchState.isDragging) {
     // Treat as tap — let the synthetic click event handle it
@@ -298,6 +303,8 @@ function handleTouchEnd(e) {
 
 function handleTouchCancel(e) {
   if (!touchState) return;
+  const touch = Array.from(e.changedTouches).find(t => t.identifier === touchState.touchId);
+  if (!touch) return;
   if (touchState.ghostEl) touchState.ghostEl.remove();
   document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
   document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
@@ -752,7 +759,14 @@ document.addEventListener('keydown', e => {
 });
 
 // Re-render on resize so JS-computed offsets match new card dimensions
-window.addEventListener('resize', () => redraw());
+let resizeRaf = null;
+window.addEventListener('resize', () => {
+  if (resizeRaf) return;
+  resizeRaf = requestAnimationFrame(() => {
+    resizeRaf = null;
+    redraw();
+  });
+});
 
 // Draw toggle
 document.getElementById('draw-toggle').addEventListener('click', (e) => {

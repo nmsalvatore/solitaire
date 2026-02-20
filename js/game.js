@@ -31,11 +31,13 @@ function shuffle(deck) {
 
 let state = null;
 let history = [];
+const HISTORY_LIMIT = 300;
 let moveCount = 0;
 let drawCount = 1;
 
 function saveSnapshot() {
   history.push({ state: JSON.parse(JSON.stringify(state)), moveCount });
+  if (history.length > HISTORY_LIMIT) history.shift();
 }
 
 function undo() {
@@ -273,6 +275,7 @@ function checkWin() {
 
 window.Game = {
   SUITS,
+  HISTORY_LIMIT,
   initGame,
   getState,
   isRed,
