@@ -700,6 +700,39 @@ test('findBestMove skips foundation for non-top tableau card and finds tableau i
   assertEqual(dest.colIndex, 1);
 });
 
+test('findBestMove returns null for buried card with valid foundation but no tableau target', () => {
+  const state = Game.initGame();
+  for (let i = 0; i < 7; i++) state.tableau[i] = [];
+  const six  = { suit: 'spades', rank: 6, faceUp: true };
+  const five = { suit: 'hearts', rank: 5, faceUp: true };
+  state.tableau[0] = [six, five];
+  state.foundations[0] = [
+    { suit: 'spades', rank: 1, faceUp: true },
+    { suit: 'spades', rank: 2, faceUp: true },
+    { suit: 'spades', rank: 3, faceUp: true },
+    { suit: 'spades', rank: 4, faceUp: true },
+    { suit: 'spades', rank: 5, faceUp: true },
+  ];
+  const dest = Game.findBestMove(six, { type: 'tableau', colIndex: 0 });
+  assertEqual(dest, null, 'buried card with no tableau target should return null');
+});
+
+test('findBestMove still prefers foundation for top card of tableau', () => {
+  const state = Game.initGame();
+  for (let i = 0; i < 7; i++) state.tableau[i] = [];
+  const six = { suit: 'spades', rank: 6, faceUp: true };
+  state.tableau[0] = [six];
+  state.foundations[0] = [
+    { suit: 'spades', rank: 1, faceUp: true },
+    { suit: 'spades', rank: 2, faceUp: true },
+    { suit: 'spades', rank: 3, faceUp: true },
+    { suit: 'spades', rank: 4, faceUp: true },
+    { suit: 'spades', rank: 5, faceUp: true },
+  ];
+  const dest = Game.findBestMove(six, { type: 'tableau', colIndex: 0 });
+  assertEqual(dest.type, 'foundation', 'top card should still go to foundation');
+});
+
 test('findBestMove skips source column for tableau cards', () => {
   const state = Game.initGame();
   for (let i = 0; i < 7; i++) state.tableau[i] = [];
