@@ -395,9 +395,9 @@ function handleDrop(e) {
     }
   } else if (pileEl.classList.contains('tableau-col')) {
     const colIndex = parseInt(pileEl.dataset.col);
-    if (Game.canMoveToTableau(dragState.cards[0], Game.getState().tableau[colIndex])) {
-      Game.saveSnapshot();
-      Game.moveToTableau(dragState.cards, colIndex, dragState.source);
+    Game.saveSnapshot();
+    if (!Game.moveToTableau(dragState.cards, colIndex, dragState.source)) {
+      Game.undo();
     }
   }
 
@@ -474,12 +474,14 @@ function handleClick(e) {
       if (dest) {
         clearSelection();
         Game.saveSnapshot();
+        let moved;
         if (dest.type === 'foundation') {
-          Game.moveToFoundation(resolved.card, resolved.source);
-          if (Game.checkWin()) showWin();
+          moved = Game.moveToFoundation(resolved.card, resolved.source);
+          if (moved && Game.checkWin()) showWin();
         } else {
-          Game.moveToTableau(resolved.cards, dest.colIndex, resolved.source);
+          moved = Game.moveToTableau(resolved.cards, dest.colIndex, resolved.source);
         }
+        if (!moved) Game.undo();
         redraw();
         return;
       }
@@ -570,11 +572,12 @@ function tryDrop(pileEl) {
   // Tableau drop
   if (pileEl.classList.contains('tableau-col')) {
     const colIndex = parseInt(pileEl.dataset.col);
-    if (!Game.canMoveToTableau(selection.cards[0], state.tableau[colIndex])) {
+    Game.saveSnapshot();
+    const moved = Game.moveToTableau(selection.cards, colIndex, selection.source);
+    if (!moved) {
+      Game.undo();
       return false; // invalid move → fall through to select the clicked card
     }
-    Game.saveSnapshot();
-    Game.moveToTableau(selection.cards, colIndex, selection.source);
     clearSelection();
     redraw();
     return true;
@@ -594,9 +597,15 @@ function autoMoveToFoundation(info) {
   }
 
   clearSelection();
+  const fi = Game.foundationIndex(card.suit);
+  if (!Game.canMoveToFoundation(card, Game.getState().foundations[fi])) {
+    redraw();
+    shakeCards([card]);
+    return;
+  }
   Game.saveSnapshot();
-  const moved = Game.moveToFoundation(card, info.source);
-  if (moved && Game.checkWin()) showWin();
+  Game.moveToFoundation(card, info.source);
+  if (Game.checkWin()) showWin();
   redraw();
 }
 

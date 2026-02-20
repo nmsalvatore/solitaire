@@ -876,6 +876,68 @@ test('initGame clears undo history', () => {
   assert(!Game.canUndo(), 'undo history should be empty after initGame');
 });
 
+// moveToTableau rejects invalid runs (not alternating color or not descending)
+test('moveToTableau rejects stack with same-color cards', () => {
+  const state = Game.initGame();
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  const redJack = { suit: 'diamonds', rank: 11, faceUp: true };
+  state.tableau[0] = [redQueen, redJack];
+  const blackKing = { suit: 'spades', rank: 13, faceUp: true };
+  state.tableau[1] = [blackKing];
+  const moved = Game.moveToTableau([redQueen, redJack], 1, { type: 'tableau', colIndex: 0 });
+  assert(!moved, 'should reject stack where cards are same color');
+  assertEqual(state.tableau[0].length, 2, 'source unchanged');
+  assertEqual(state.tableau[1].length, 1, 'target unchanged');
+});
+
+test('moveToTableau rejects stack with non-descending ranks', () => {
+  const state = Game.initGame();
+  const blackJack = { suit: 'spades', rank: 11, faceUp: true };
+  const redNine = { suit: 'hearts', rank: 9, faceUp: true };
+  state.tableau[0] = [blackJack, redNine];
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  state.tableau[1] = [redQueen];
+  const moved = Game.moveToTableau([blackJack, redNine], 1, { type: 'tableau', colIndex: 0 });
+  assert(!moved, 'should reject stack with non-sequential ranks');
+  assertEqual(state.tableau[0].length, 2, 'source unchanged');
+  assertEqual(state.tableau[1].length, 1, 'target unchanged');
+});
+
+test('moveToTableau rejects stack containing a face-down card', () => {
+  const state = Game.initGame();
+  const blackJack = { suit: 'spades', rank: 11, faceUp: true };
+  const redTen = { suit: 'hearts', rank: 10, faceUp: false };
+  state.tableau[0] = [blackJack, redTen];
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  state.tableau[1] = [redQueen];
+  const moved = Game.moveToTableau([blackJack, redTen], 1, { type: 'tableau', colIndex: 0 });
+  assert(!moved, 'should reject stack with face-down card');
+});
+
+test('moveToTableau accepts a valid multi-card run', () => {
+  const state = Game.initGame();
+  const redQueen = { suit: 'hearts', rank: 12, faceUp: true };
+  const blackJack = { suit: 'spades', rank: 11, faceUp: true };
+  const redTen = { suit: 'diamonds', rank: 10, faceUp: true };
+  state.tableau[0] = [redQueen, blackJack, redTen];
+  const blackKing = { suit: 'clubs', rank: 13, faceUp: true };
+  state.tableau[1] = [blackKing];
+  const moved = Game.moveToTableau([redQueen, blackJack, redTen], 1, { type: 'tableau', colIndex: 0 });
+  assert(moved, 'should accept valid alternating-color descending run');
+  assertEqual(state.tableau[1].length, 4);
+  assertEqual(state.tableau[0].length, 0);
+});
+
+// drawFromStock no-op when both stock and waste are empty
+test('drawFromStock does not increment moveCount when stock and waste are empty', () => {
+  const state = Game.initGame();
+  state.stock = [];
+  state.waste = [];
+  const before = Game.getMoveCount();
+  Game.drawFromStock();
+  assertEqual(Game.getMoveCount(), before, 'moveCount should not change on no-op draw');
+});
+
 // ── Summary ───────────────────────────────────────
 
 window._testResults = { passed: _passed, failed: _failed };

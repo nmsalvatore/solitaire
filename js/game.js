@@ -122,6 +122,7 @@ function getDrawCount() {
 }
 
 function drawFromStock() {
+  if (state.stock.length === 0 && state.waste.length === 0) return;
   moveCount++;
   if (state.stock.length === 0) {
     // Flip waste back to stock
@@ -143,6 +144,7 @@ function drawFromStock() {
 function moveToTableau(cards, targetColIndex, source) {
   const targetCol = state.tableau[targetColIndex];
   if (!canMoveToTableau(cards[0], targetCol)) return false;
+  if (!_isValidRun(cards)) return false;
   if (!_isValidSource(cards, source)) return false;
 
   moveCount++;
@@ -168,6 +170,18 @@ function moveToFoundation(card, source, options) {
 }
 
 // ── Internal helpers ──────────────────────────────
+
+function _isValidRun(cards) {
+  for (let i = 0; i < cards.length; i++) {
+    if (!cards[i].faceUp) return false;
+    if (i === 0) continue;
+    const prev = cards[i - 1];
+    const curr = cards[i];
+    if (isRed(prev) === isRed(curr)) return false;
+    if (curr.rank !== prev.rank - 1) return false;
+  }
+  return true;
+}
 
 function _isValidSource(cards, source) {
   if (source.type === 'waste') {

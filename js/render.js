@@ -119,7 +119,8 @@ function renderGame(state, selection) {
             ghost.style.zIndex = String(ghostCount - i);
             stockEl.appendChild(ghost);
         }
-        const el = makeCard({ suit: "spades", rank: 1, faceUp: false });
+        const el = document.createElement("div");
+        el.className = "card face-down";
         el.style.top = "0";
         el.style.left = "0";
         el.style.zIndex = String(ghostCount + 1);
