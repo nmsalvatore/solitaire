@@ -188,6 +188,16 @@ function renderGame(state, selection) {
     document.querySelectorAll('.lazy-option').forEach(el => {
         el.classList.toggle('active', el.dataset.lazy === lazyVal);
     });
+
+    // ── Pass toggle visibility and active state
+    const passRow = document.getElementById('pass-row');
+    if (passRow) {
+        passRow.style.display = Game.getDrawCount() === 3 ? '' : 'none';
+        const currentPass = String(Game.getPassLimit() === 0 ? 0 : 3);
+        document.querySelectorAll('.pass-option').forEach(el => {
+            el.classList.toggle('active', el.dataset.pass === currentPass);
+        });
+    }
 }
 
 window.Render = { renderGame };

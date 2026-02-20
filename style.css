@@ -78,6 +78,7 @@ header {
 h1 {
     font-size: var(--fs-lg);
     color: var(--card-face);
+    text-shadow: 2px 2px var(--shadow);
     line-height: 1;
 }
 
@@ -85,12 +86,11 @@ h1 {
 #header-bottom {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
 }
 
 #header-bottom {
     flex-direction: column;
-    gap: 4px;
 }
 
 #header-bottom .row {
@@ -120,6 +120,7 @@ h1 {
     font-family: "Silkscreen", monospace;
     font-size: var(--fs-sm);
     color: var(--text);
+    box-shadow: 2px 2px var(--shadow);
     background: var(--card-back-b);
     border: none;
     padding: calc(var(--card-w) * 0.01) calc(var(--card-w) * 0.12);
@@ -145,6 +146,8 @@ h1 {
 #undo-btn {
     color: var(--bg);
     background: var(--text-secondary);
+    position: relative;
+    top: 4px;
 }
 
 #undo-btn:hover {
@@ -256,7 +259,8 @@ h1 {
 }
 
 .draw-option,
-.lazy-option {
+.lazy-option,
+.pass-option {
     font-family: inherit;
     font-size: inherit;
     color: inherit;
@@ -275,6 +279,31 @@ h1 {
 }
 
 .lazy-option.active {
+    color: var(--text);
+}
+
+#pass-row {
+    display: none;
+}
+
+#pass-toggle {
+    font-family: "Silkscreen", monospace;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    user-select: none;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.pass-option {
+    cursor: pointer;
+}
+
+.pass-option:hover {
+    color: var(--text);
+}
+
+.pass-option.active {
     color: var(--text);
 }
 
@@ -843,7 +872,8 @@ h1 {
     #move-counter,
     #undo-btn,
     #draw-toggle,
-    #lazy-toggle {
+    #lazy-toggle,
+    #pass-toggle {
         font-size: 14px;
     }
 

@@ -1159,6 +1159,55 @@ test('initGame resets stockPass', () => {
   Game.setDrawCount(1); // restore
 });
 
+// ── Configurable pass limit ──────────────────────
+
+test('setPassLimit and getPassLimit round-trip', () => {
+  Game.setPassLimit(0);
+  assertEqual(Game.getPassLimit(), 0, 'should return 0 after setting unlimited');
+  Game.setPassLimit(2);
+  assertEqual(Game.getPassLimit(), 2, 'should return 2 after setting 3-pass');
+});
+
+test('draw-3 unlimited mode allows recycling indefinitely', () => {
+  Game.setDrawCount(3);
+  Game.setPassLimit(0);
+  const state = Game.initGame();
+  // Complete 5 full passes — all should succeed
+  for (let pass = 0; pass < 5; pass++) {
+    while (state.stock.length > 0) {
+      assert(Game.drawFromStock() === true, `draw should succeed on pass ${pass + 1}`);
+    }
+    assert(Game.drawFromStock() === true, `recycle should succeed after pass ${pass + 1}`);
+  }
+  Game.setPassLimit(2);
+  Game.setDrawCount(1);
+});
+
+test('draw-3 with passLimit=2 still enforces 3-pass limit', () => {
+  Game.setDrawCount(3);
+  Game.setPassLimit(2);
+  const state = Game.initGame();
+  // Complete 3 full passes
+  for (let pass = 0; pass < 3; pass++) {
+    while (state.stock.length > 0) {
+      assert(Game.drawFromStock() === true, `draw should succeed on pass ${pass + 1}`);
+    }
+    if (pass < 2) {
+      assert(Game.drawFromStock() === true, `recycle should succeed after pass ${pass + 1}`);
+    }
+  }
+  // 4th recycle should fail
+  assertEqual(Game.drawFromStock(), false, 'recycle should be blocked after 3 passes');
+  Game.setDrawCount(1);
+});
+
+test('initGame preserves passLimit', () => {
+  Game.setPassLimit(0);
+  Game.initGame();
+  assertEqual(Game.getPassLimit(), 0, 'passLimit should survive initGame');
+  Game.setPassLimit(2);
+});
+
 // ── Summary ───────────────────────────────────────
 
 window._testResults = { passed: _passed, failed: _failed };

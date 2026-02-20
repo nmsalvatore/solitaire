@@ -25,6 +25,10 @@ function storageSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
 const savedDraw = parseInt(storageGet('drawCount')) || 1;
 Game.setDrawCount(savedDraw === 3 ? 3 : 1);
 
+// ── Pass limit preference ────────────────────────
+const savedPass = storageGet('passLimit');
+Game.setPassLimit(savedPass === '0' ? 0 : 2);
+
 // ── Touch state ───────────────────────────────────
 // null when idle; during a touch drag:
 // { cards, source, startX, startY, isDragging, ghostEl, offsetX, offsetY, currentTarget }
@@ -790,6 +794,19 @@ document.getElementById('draw-toggle').addEventListener('click', (e) => {
   if (next === Game.getDrawCount()) return;
   Game.setDrawCount(next);
   storageSet('drawCount', next);
+  startNewGame();
+});
+
+// Pass limit toggle
+document.getElementById('pass-toggle').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const option = e.target.closest('.pass-option');
+  if (!option) return;
+  const next = parseInt(option.dataset.pass);
+  const newLimit = next === 0 ? 0 : 2;
+  if (newLimit === Game.getPassLimit()) return;
+  Game.setPassLimit(newLimit);
+  storageSet('passLimit', newLimit);
   startNewGame();
 });
 
