@@ -143,15 +143,18 @@ h1 {
     border-radius: 6px;
 }
 
+#new-game-btn:hover,
+#help-btn:hover {
+    background: #89b5d4;
+}
+
 #play-again-btn {
-    background: var(--black);
+    background: var(--card-back-a);
     color: white;
 }
 
-#new-game-btn:hover,
-#play-again-btn:hover,
-#help-btn:hover {
-    background: #89b5d4;
+#play-again-btn:hover {
+    background: var(--card-back-b);
 }
 
 #undo-btn {
