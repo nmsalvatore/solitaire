@@ -34,9 +34,11 @@ let history = [];
 const HISTORY_LIMIT = 300;
 let moveCount = 0;
 let drawCount = 1;
+let stockPass = 0;
+const DRAW3_PASS_LIMIT = 2; // max recycles; 2 recycles = 3 total passes
 
 function saveSnapshot() {
-  history.push({ state: JSON.parse(JSON.stringify(state)), moveCount });
+  history.push({ state: JSON.parse(JSON.stringify(state)), moveCount, stockPass });
   if (history.length > HISTORY_LIMIT) history.shift();
 }
 
@@ -45,6 +47,7 @@ function undo() {
   if (snapshot) {
     state = snapshot.state;
     moveCount = snapshot.moveCount;
+    stockPass = snapshot.stockPass;
     return true;
   }
   return false;
@@ -76,6 +79,7 @@ function initGame() {
 
   history = [];
   moveCount = 0;
+  stockPass = 0;
 
   return state;
 }
@@ -126,7 +130,10 @@ function getDrawCount() {
 function drawFromStock() {
   if (state.stock.length === 0 && state.waste.length === 0) return false;
   if (state.stock.length === 0) {
+    // In draw-3, limit to DRAW3_PASS_LIMIT passes through the stock
+    if (drawCount === 3 && stockPass >= DRAW3_PASS_LIMIT) return false;
     // Flip waste back to stock — not counted as a move
+    stockPass++;
     state.stock = state.waste.reverse().map(c => ({ ...c, faceUp: false }));
     state.waste = [];
   } else {
@@ -317,6 +324,8 @@ window.Game = {
   moveToTableau,
   moveToFoundation,
   getMoveCount() { return moveCount; },
+  getStockPass() { return stockPass; },
+  DRAW3_PASS_LIMIT,
   setDrawCount,
   getDrawCount,
   findBestMove,

@@ -1085,6 +1085,80 @@ test('drawFromStock returns true when it recycles waste', () => {
   assertEqual(Game.drawFromStock(), true, 'should return true on recycle');
 });
 
+// ── Draw-3 stock pass limit ──────────────────────
+
+test('getStockPass returns 0 after initGame', () => {
+  Game.initGame();
+  assertEqual(Game.getStockPass(), 0, 'stockPass should start at 0');
+});
+
+test('draw-3 allows 3 full passes through stock', () => {
+  Game.setDrawCount(3);
+  const state = Game.initGame();
+  // Complete 3 full passes (draw all + recycle) × 3
+  for (let pass = 0; pass < 3; pass++) {
+    while (state.stock.length > 0) {
+      assert(Game.drawFromStock() === true, `draw should succeed on pass ${pass + 1}`);
+    }
+    if (pass < 2) {
+      // Recycle should work for passes 1 and 2
+      assert(Game.drawFromStock() === true, `recycle should succeed after pass ${pass + 1}`);
+    }
+  }
+  // After 3rd pass, recycle should fail
+  assertEqual(state.stock.length, 0, 'stock should be empty after 3rd pass');
+  assertEqual(Game.drawFromStock(), false, 'recycle should be blocked after 3 passes in draw-3');
+  Game.setDrawCount(1); // restore
+});
+
+test('draw-1 allows unlimited passes through stock', () => {
+  Game.setDrawCount(1);
+  const state = Game.initGame();
+  // Complete 5 full passes — should all succeed
+  for (let pass = 0; pass < 5; pass++) {
+    while (state.stock.length > 0) {
+      assert(Game.drawFromStock() === true, `draw should succeed on pass ${pass + 1}`);
+    }
+    assert(Game.drawFromStock() === true, `recycle should succeed after pass ${pass + 1}`);
+  }
+});
+
+test('stockPass increments on each recycle in draw-3', () => {
+  Game.setDrawCount(3);
+  const state = Game.initGame();
+  assertEqual(Game.getStockPass(), 0, 'should start at 0');
+  while (state.stock.length > 0) Game.drawFromStock();
+  Game.drawFromStock(); // recycle
+  assertEqual(Game.getStockPass(), 1, 'should be 1 after first recycle');
+  while (state.stock.length > 0) Game.drawFromStock();
+  Game.drawFromStock(); // recycle
+  assertEqual(Game.getStockPass(), 2, 'should be 2 after second recycle');
+  Game.setDrawCount(1); // restore
+});
+
+test('undo restores stockPass after recycle', () => {
+  Game.setDrawCount(3);
+  const state = Game.initGame();
+  while (state.stock.length > 0) Game.drawFromStock();
+  Game.saveSnapshot();
+  Game.drawFromStock(); // recycle → pass 1
+  assertEqual(Game.getStockPass(), 1, 'stockPass should be 1 after recycle');
+  Game.undo();
+  assertEqual(Game.getStockPass(), 0, 'stockPass should revert to 0 after undo');
+  Game.setDrawCount(1); // restore
+});
+
+test('initGame resets stockPass', () => {
+  Game.setDrawCount(3);
+  const state = Game.initGame();
+  while (state.stock.length > 0) Game.drawFromStock();
+  Game.drawFromStock(); // recycle
+  assert(Game.getStockPass() > 0, 'stockPass should be > 0 after recycle');
+  Game.initGame();
+  assertEqual(Game.getStockPass(), 0, 'stockPass should reset on new game');
+  Game.setDrawCount(1); // restore
+});
+
 // ── Summary ───────────────────────────────────────
 
 window._testResults = { passed: _passed, failed: _failed };
