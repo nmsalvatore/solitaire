@@ -41,11 +41,19 @@ let autoCompleting = false;
 let lazyMode = storageGet('lazyMode') === 'on';
 
 // ── Theme ────────────────────────────────────────
+const THEME_COLORS = { blue: '#1a3a5c', green: '#3d6b4a', black: '#2a2a2a' };
+
+function updateThemeColor(theme) {
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.blue);
+}
+
 (function initTheme() {
   const saved = storageGet('theme');
   if (saved && saved !== 'blue') {
     document.body.setAttribute('data-theme', saved);
   }
+  updateThemeColor(saved || 'blue');
 }());
 
 // ── Helpers ───────────────────────────────────────
@@ -842,6 +850,7 @@ document.getElementById('pass-toggle').addEventListener('click', (e) => {
         document.body.setAttribute('data-theme', theme);
       }
       storageSet('theme', theme);
+      updateThemeColor(theme);
       redraw();
     }
     picker.classList.remove('open');

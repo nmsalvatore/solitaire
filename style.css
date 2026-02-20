@@ -854,7 +854,7 @@ h1 {
 /* ── Mobile header readability ────────────────────── */
 @media (max-width: 520px) {
     header {
-        margin: calc(var(--card-w) * 0.5) 0 calc(var(--card-w) * 0.8);
+        margin: calc(var(--card-w) * 0.2) 0 calc(var(--card-w) * 0.8);
     }
 
     h1 {
