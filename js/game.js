@@ -125,12 +125,12 @@ function getDrawCount() {
 
 function drawFromStock() {
   if (state.stock.length === 0 && state.waste.length === 0) return false;
-  moveCount++;
   if (state.stock.length === 0) {
-    // Flip waste back to stock
+    // Flip waste back to stock — not counted as a move
     state.stock = state.waste.reverse().map(c => ({ ...c, faceUp: false }));
     state.waste = [];
   } else {
+    moveCount++;
     const toDraw = Math.min(drawCount, state.stock.length);
     for (let i = 0; i < toDraw; i++) {
       const card = state.stock.pop();

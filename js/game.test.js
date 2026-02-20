@@ -994,6 +994,20 @@ test('drawFromStock does not increment moveCount when stock and waste are empty'
   assertEqual(Game.getMoveCount(), before, 'moveCount should not change on no-op draw');
 });
 
+// Recycling waste back to stock should not count as a move
+test('drawFromStock does not increment moveCount when recycling waste', () => {
+  const state = Game.initGame();
+  // Drain entire stock
+  while (state.stock.length > 0) {
+    Game.drawFromStock();
+  }
+  const before = Game.getMoveCount();
+  assert(state.waste.length > 0, 'waste should have cards');
+  // Recycle waste back to stock
+  Game.drawFromStock();
+  assertEqual(Game.getMoveCount(), before, 'moveCount should not change on recycle');
+});
+
 // undo history is capped to prevent unbounded memory growth
 test('undo history is capped at HISTORY_LIMIT', () => {
   const LIMIT = Game.HISTORY_LIMIT;
