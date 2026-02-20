@@ -603,7 +603,11 @@ function autoMoveToFoundation(info) {
 
   if (info.source.type === 'tableau') {
     const col = Game.getState().tableau[info.source.colIndex];
-    if (col[col.length - 1] !== card) return;
+    if (col[col.length - 1] !== card) {
+      redraw();
+      shakeCards([card]);
+      return;
+    }
   }
 
   clearSelection();
@@ -752,6 +756,10 @@ document.getElementById('undo-btn').addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !document.getElementById('win-screen').hasAttribute('hidden')) {
+    hideWin();
+    return;
+  }
   if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
     e.preventDefault();
     if (autoCompleting) return;

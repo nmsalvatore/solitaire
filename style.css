@@ -26,14 +26,12 @@
     --text-secondary: #6a9cbf;
     --text-muted: #444444;
     --dot: #aaaaaa;
-    --dot-border: #555555;
     --card-w: clamp(42px, calc((100vw - 24px) / 7.6), 100px);
     --card-h: calc(var(--card-w) * 1.4);
     --grid-gap: calc(var(--card-w) * 0.1);
     --body-pad: calc(var(--card-w) * 0.12);
 
     /* Font sizes — game board (card-w relative, clamped for mobile readability) */
-    --fs-xs: clamp(10px, calc(var(--card-w) * 0.12), 12px);
     --fs-sm: clamp(13px, calc(var(--card-w) * 0.15), 15px);
     --fs-md: clamp(15px, calc(var(--card-w) * 0.2), 20px);
     --fs-lg: clamp(16px, calc(var(--card-w) * 0.28), 28px);
