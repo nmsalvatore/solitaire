@@ -417,7 +417,7 @@ test('undo restores flipped cards to face-down', () => {
   assert(restored.tableau[0][1].faceUp, 'top card should be face-up after undo');
 });
 
-test('undo after two moves only reverts the second move', () => {
+test('undo after two moves reverts each in order', () => {
   const state = Game.initGame();
   // Move 1: draw from stock
   Game.saveSnapshot();
@@ -427,13 +427,18 @@ test('undo after two moves only reverts the second move', () => {
   Game.saveSnapshot();
   Game.drawFromStock();
   assertEqual(state.waste.length, 2, 'waste should have 2 cards');
-  // Undo only reverts the second draw
+  // Undo reverts the second draw
   Game.undo();
   const restored = Game.getState();
-  assertEqual(restored.waste.length, 1, 'waste should have 1 card after undo');
+  assertEqual(restored.waste.length, 1, 'waste should have 1 card after first undo');
   assertEqual(restored.waste[0].suit, wasteAfterFirstDraw.suit);
   assertEqual(restored.waste[0].rank, wasteAfterFirstDraw.rank);
-  assert(!Game.canUndo(), 'canUndo should be false — only one level');
+  assert(Game.canUndo(), 'canUndo should still be true — first move remains');
+  // Undo reverts the first draw
+  Game.undo();
+  const restored2 = Game.getState();
+  assertEqual(restored2.waste.length, 0, 'waste should be empty after second undo');
+  assert(!Game.canUndo(), 'canUndo should be false — history exhausted');
 });
 
 test('initGame clears undo history', () => {
@@ -817,6 +822,58 @@ test('checkWin returns false when one foundation is incomplete', () => {
   // Remove the last card from one foundation
   state.foundations[2].pop();
   assert(!Game.checkWin(), 'should be false when one foundation has only 12 cards');
+});
+
+// unlimited undo history
+test('undo can revert multiple moves in sequence', () => {
+  const state = Game.initGame();
+  // Set up: empty foundations, put aces in waste one at a time
+  const aceSpades = { suit: 'spades', rank: 1, faceUp: true };
+  const aceHearts = { suit: 'hearts', rank: 1, faceUp: true };
+  state.waste = [aceSpades];
+  state.foundations[0] = [];
+  state.foundations[1] = [];
+
+  // Move 1: ace of spades to foundation
+  Game.saveSnapshot();
+  Game.moveToFoundation(aceSpades, { type: 'waste' });
+  assertEqual(state.foundations[0].length, 1, 'spades foundation has ace');
+
+  // Move 2: ace of hearts to foundation
+  state.waste = [aceHearts];
+  Game.saveSnapshot();
+  Game.moveToFoundation(aceHearts, { type: 'waste' });
+  assertEqual(state.foundations[1].length, 1, 'hearts foundation has ace');
+
+  // Undo move 2
+  assert(Game.canUndo(), 'should be able to undo after move 2');
+  Game.undo();
+  const s1 = Game.getState();
+  assertEqual(s1.foundations[1].length, 0, 'hearts foundation empty after first undo');
+  assertEqual(s1.foundations[0].length, 1, 'spades foundation still has ace');
+
+  // Undo move 1
+  assert(Game.canUndo(), 'should be able to undo again after first undo');
+  Game.undo();
+  const s2 = Game.getState();
+  assertEqual(s2.foundations[0].length, 0, 'spades foundation empty after second undo');
+});
+
+test('canUndo returns false when history is fully exhausted', () => {
+  Game.initGame();
+  Game.saveSnapshot();
+  Game.drawFromStock();
+  Game.undo();
+  assert(!Game.canUndo(), 'should not be able to undo with no history left');
+});
+
+test('initGame clears undo history', () => {
+  Game.initGame();
+  Game.saveSnapshot();
+  Game.drawFromStock();
+  assert(Game.canUndo(), 'should be able to undo before new game');
+  Game.initGame();
+  assert(!Game.canUndo(), 'undo history should be empty after initGame');
 });
 
 // ── Summary ───────────────────────────────────────

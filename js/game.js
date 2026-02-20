@@ -30,26 +30,26 @@ function shuffle(deck) {
 // ── State ─────────────────────────────────────────
 
 let state = null;
-let snapshot = null;
+let history = [];
 let moveCount = 0;
 let drawCount = 1;
 
 function saveSnapshot() {
-  snapshot = { state: JSON.parse(JSON.stringify(state)), moveCount };
+  history.push({ state: JSON.parse(JSON.stringify(state)), moveCount });
 }
 
 function undo() {
+  const snapshot = history.pop();
   if (snapshot) {
     state = snapshot.state;
     moveCount = snapshot.moveCount;
-    snapshot = null;
     return true;
   }
   return false;
 }
 
 function canUndo() {
-  return snapshot !== null;
+  return history.length > 0;
 }
 
 function initGame() {
@@ -72,7 +72,7 @@ function initGame() {
     tableau,
   };
 
-  snapshot = null;
+  history = [];
   moveCount = 0;
 
   return state;
