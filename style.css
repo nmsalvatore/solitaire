@@ -916,13 +916,13 @@ button:focus-visible {
 /* ── Reduced motion ───────────────────────────────── */
 /* ── Theme picker ─────────────────────────────────── */
 #theme-picker {
-    position: fixed;
-    bottom: 16px;
-    left: 16px;
+    width: calc(7 * var(--card-w) + 6 * var(--grid-gap));
+    margin-top: auto;
+    padding-top: var(--sp-md);
+    padding-bottom: var(--sp-md);
     display: flex;
     align-items: center;
     gap: 0;
-    z-index: 900;
 }
 
 #theme-picker.open {
