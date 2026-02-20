@@ -189,6 +189,12 @@ function renderGame(state, selection) {
         el.classList.toggle('active', el.dataset.lazy === lazyVal);
     });
 
+    // ── Theme picker active dot
+    const currentTheme = document.body.getAttribute('data-theme') || 'blue';
+    document.querySelectorAll('.theme-dot').forEach(el => {
+        el.classList.toggle('active', el.dataset.theme === currentTheme);
+    });
+
     // ── Pass toggle visibility and active state
     const passRow = document.getElementById('pass-row');
     if (passRow) {

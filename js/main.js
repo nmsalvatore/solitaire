@@ -40,6 +40,14 @@ let autoCompleting = false;
 // ── Lazy mode state ──────────────────────────────
 let lazyMode = storageGet('lazyMode') === 'on';
 
+// ── Theme ────────────────────────────────────────
+(function initTheme() {
+  const saved = storageGet('theme');
+  if (saved && saved !== 'blue') {
+    document.body.setAttribute('data-theme', saved);
+  }
+}());
+
 // ── Helpers ───────────────────────────────────────
 
 function redraw() {
@@ -808,6 +816,20 @@ document.getElementById('pass-toggle').addEventListener('click', (e) => {
   Game.setPassLimit(newLimit);
   storageSet('passLimit', newLimit);
   startNewGame();
+});
+
+// Theme picker
+document.getElementById('theme-picker').addEventListener('click', (e) => {
+  const dot = e.target.closest('.theme-dot');
+  if (!dot) return;
+  const theme = dot.dataset.theme;
+  if (theme === 'blue') {
+    document.body.removeAttribute('data-theme');
+  } else {
+    document.body.setAttribute('data-theme', theme);
+  }
+  storageSet('theme', theme);
+  redraw();
 });
 
 // Lazy toggle
