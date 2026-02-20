@@ -944,10 +944,6 @@ button:focus-visible {
 .theme-dot[data-theme="black"] {
     background: #2a2a2a;
 }
-.theme-dot[data-theme="red"] {
-    background: #6e3540;
-}
-
 .theme-dot.active {
     border-color: var(--card-face);
 }
@@ -964,20 +960,6 @@ body[data-theme="green"] {
     --text-secondary: #7ebea8;
     --overlay: rgba(35, 55, 40, 0.55);
     --drop-target: #3a7055;
-}
-
-/* ── Red theme ────────────────────────────────────── */
-body[data-theme="red"] {
-    --bg: #6e3540;
-    --pile-empty: #4a2228;
-    --pile-border: #8a4a55;
-    --pile-border-red: #9a5a65;
-    --card-back-a: #64384a;
-    --card-back-b: #865062;
-    --accent: #a06878;
-    --text-secondary: #c8909a;
-    --overlay: rgba(40, 15, 20, 0.55);
-    --drop-target: #6a3040;
 }
 
 /* ── Black theme ──────────────────────────────────── */
