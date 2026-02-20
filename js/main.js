@@ -477,7 +477,7 @@ function handleClick(e) {
       return;
     }
 
-    const resolved = resolveCard(cardEl);
+    let resolved = resolveCard(cardEl);
     if (!resolved) return;
 
     // Manual double-click detection — checked first, before selection/tryDrop,
@@ -527,6 +527,9 @@ function handleClick(e) {
       // Attempt drop on this card's pile
       const pileEl2 = cardEl.closest('.pile');
       if (tryDrop(pileEl2)) return;
+      // tryDrop's saveSnapshot+undo may have replaced state refs
+      resolved = resolveCard(cardEl);
+      if (!resolved) return;
     }
 
     if (
