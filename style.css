@@ -34,8 +34,8 @@
 
     /* Font sizes — game board (card-w relative, clamped for mobile readability) */
     --fs-xs: clamp(10px, calc(var(--card-w) * 0.12), 12px);
-    --fs-sm: clamp(11px, calc(var(--card-w) * 0.15), 15px);
-    --fs-md: clamp(13px, calc(var(--card-w) * 0.2), 20px);
+    --fs-sm: clamp(13px, calc(var(--card-w) * 0.15), 15px);
+    --fs-md: clamp(15px, calc(var(--card-w) * 0.2), 20px);
     --fs-lg: clamp(16px, calc(var(--card-w) * 0.28), 28px);
     --fs-icon: clamp(18px, calc(var(--card-w) * 0.36), 36px);
     --fs-suit: clamp(20px, calc(var(--card-w) * 0.42), 42px);
@@ -101,14 +101,19 @@ h1 {
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-end;
-    padding-top: 6px;
 }
 
-#header-buttons {
+#header-top-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#header-bottom-group {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 8px;
+    gap: 6px;
 }
 
 #move-row {
@@ -146,7 +151,7 @@ h1 {
 
 #undo-btn {
     font-family: "Silkscreen", monospace;
-    font-size: var(--fs-sm);
+    font-size: var(--fs-xs);
     color: var(--bg);
     background: var(--text-secondary);
     border: none;
@@ -471,8 +476,7 @@ h1 {
 
 #help-box {
     background: var(--card-face);
-    border: 2px solid var(--black);
-    box-shadow: 4px 4px 0 var(--shadow);
+    border: 3px solid var(--black);
     padding: var(--sp-xl);
     width: min(600px, 90vw);
     position: relative;
@@ -680,7 +684,6 @@ h1 {
     height: 10px;
     background: var(--dot);
     border: none;
-    box-shadow: 2px 2px 0 var(--shadow);
     padding: 0;
     cursor: pointer;
 }
@@ -694,7 +697,6 @@ h1 {
     display: flex;
     justify-content: space-between;
     margin-top: auto;
-    padding-top: var(--sp-md);
 }
 
 #help-prev,
@@ -849,7 +851,7 @@ h1 {
     }
 
     h1 {
-        font-size: 20px;
+        font-size: 24px;
     }
 
     #header-right {
@@ -862,7 +864,11 @@ h1 {
     #undo-btn,
     #draw-toggle,
     #lazy-toggle {
-        font-size: 12px;
+        font-size: 14px;
+    }
+
+    #undo-btn {
+        font-size: 10px;
     }
 
     #help-box {

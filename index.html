@@ -28,14 +28,14 @@
       </div>
     </div>
     <div id="header-right">
-      <div id="header-buttons">
-          <div>
-              <button id="new-game-btn">NEW GAME</button>
-              <button id="help-btn" aria-label="Rules">?</button>
-          </div>
-          <button id="undo-btn" aria-label="Undo">↩ UNDO</button>
+      <div id="header-top-buttons">
+          <button id="new-game-btn">NEW GAME</button>
+          <button id="help-btn" aria-label="Rules">?</button>
       </div>
-      <div id="move-counter">MOVES: 0</div>
+      <div id="header-bottom-group">
+        <div id="move-counter">MOVES: 0</div>
+        <button id="undo-btn" aria-label="Undo">UNDO ⌘Z</button>
+      </div>
     </div>
   </header>
 
@@ -102,7 +102,7 @@
                 <div class="mini-card black" style="top:36px"><span class="mc-rank">7</span><span class="mc-suit">♠</span></div>
               </div>
               <div class="slide-arrow">➡</div>
-              <div class="mini-pile" style="font-size:13px;color:#2a5a8c;">K</div>
+              <div class="mini-pile" style="font-size:13px;color:var(--text-secondary);">K</div>
             </div>
             <div class="slide-title">THE COLUMNS</div>
             <p class="slide-body">Stack cards going down in rank, alternating red and black. Empty column? Only a King gets that throne.</p>
@@ -114,7 +114,7 @@
               <div class="mini-card face-down-mini"></div>
               <div class="slide-arrow">➡</div>
               <div class="mini-card red"><span class="mc-rank">A</span><span class="mc-suit">♥</span></div>
-              <div class="slide-arrow" style="font-size:22px;color:#2a5a8c;">↺</div>
+              <div class="slide-arrow" style="font-size:22px;color:var(--text-secondary);">↺</div>
             </div>
             <div class="slide-title">THE DRAW PILE</div>
             <p class="slide-body">Click the stock to flip cards over. Run out? Click again to shuffle them back. Switch between DRAW 1 and DRAW 3 if you want a challenge — heads up, toggling it starts a new game.</p>
@@ -138,11 +138,10 @@
           <!-- SLIDE 6: UNDO & AUTO-FINISH -->
           <div class="help-slide">
             <div class="slide-visual">
-              <div class="mini-btn">↩</div>
-              <div class="slide-arrow" style="font-size:22px;color:#2a5a8c;">⌘Z</div>
+              <div class="mini-btn">UNDO ⌘Z</div>
             </div>
             <div class="slide-title">UNDO &amp; AUTO-FINISH</div>
-            <p class="slide-body">Hit ↩ or Ctrl+Z to undo — keep pressing to rewind as far as you want. Once all cards are face-up, the game finishes itself.</p>
+            <p class="slide-body">Hit UNDO or Ctrl+Z to undo — keep pressing to rewind as far as you want. Once all cards are face-up, the game finishes itself.</p>
           </div>
 
           <!-- SLIDE 7: LAZY MODE -->
