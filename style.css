@@ -462,26 +462,20 @@ h1 {
 
 #help-close-btn {
     font-family: "Silkscreen", monospace;
-    font-size: var(--fs-modal-sm);
+    font-size: var(--fs-modal-lg);
     position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 32px;
-    height: 32px;
+    top: 12px;
+    right: 18px;
     padding: 0;
-    background: var(--card-face);
+    background: none;
     color: var(--black);
-    border: 3px solid var(--black);
-    box-shadow: 2px 2px 0 var(--shadow);
+    border: none;
     cursor: pointer;
-    transition:
-        transform 0.05s,
-        box-shadow 0.05s;
+    transition: opacity 0.1s;
 }
 
-#help-close-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 0 0 0 var(--shadow);
+#help-close-btn:hover {
+    opacity: 0.5;
 }
 
 /* ── Help slider ─────────────────────────────────── */
@@ -678,28 +672,23 @@ h1 {
 #help-prev,
 #help-next {
     font-family: "Silkscreen", monospace;
-    font-size: var(--fs-modal-sm);
-    padding: var(--sp-xs) var(--sp-sm);
-    background: var(--card-face);
-    color: var(--black);
-    border: 3px solid var(--black);
-    box-shadow: 3px 3px 0 var(--shadow);
+    font-size: var(--fs-modal-lg);
+    padding: var(--sp-xs);
+    background: none;
+    color: var(--accent);
+    border: none;
     cursor: pointer;
-    image-rendering: pixelated;
-    transition:
-        transform 0.05s,
-        box-shadow 0.05s;
+    transition: color 0.1s;
 }
 
-#help-prev:active,
-#help-next:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--shadow);
+#help-prev:hover,
+#help-next:hover {
+    color: var(--black);
 }
 
 #help-prev:disabled,
 #help-next:disabled {
-    opacity: 0.35;
+    opacity: 0.25;
     cursor: default;
 }
 
@@ -842,6 +831,27 @@ h1 {
     #draw-toggle,
     #lazy-toggle {
         font-size: 12px;
+    }
+
+    #help-box {
+        padding: var(--sp-md);
+    }
+
+    .slide-visual {
+        height: 100px;
+        margin-bottom: var(--sp-sm);
+    }
+
+    .slide-body {
+        line-height: 1.9;
+    }
+
+    #help-title {
+        margin-bottom: var(--sp-sm);
+    }
+
+    #help-dots {
+        margin-top: var(--sp-lg);
     }
 }
 
