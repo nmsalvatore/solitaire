@@ -60,9 +60,8 @@ body {
     color: var(--text);
     min-height: 100vh;
     padding: calc(var(--body-pad) + env(safe-area-inset-top))
-             calc(var(--body-pad) + env(safe-area-inset-right))
-             var(--body-pad)
-             calc(var(--body-pad) + env(safe-area-inset-left));
+        calc(var(--body-pad) + env(safe-area-inset-right)) var(--body-pad)
+        calc(var(--body-pad) + env(safe-area-inset-left));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -71,7 +70,7 @@ body {
 /* ── Header ─────────────────────────────────────── */
 header {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     justify-content: space-between;
     margin: calc(var(--card-w) * 0.5) 0;
     width: calc(7 * var(--card-w) + 6 * var(--grid-gap));
@@ -81,7 +80,6 @@ header {
 h1 {
     font-size: var(--fs-lg);
     color: var(--card-face);
-    text-shadow: 2px 2px 0 var(--shadow);
     margin-bottom: var(--sp-sm);
     line-height: 1;
 }
@@ -101,15 +99,22 @@ h1 {
 #header-right {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     align-items: flex-end;
-    gap: calc(var(--card-w) * 0.12);
+    padding-top: 6px;
 }
 
 #header-buttons {
     display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+#move-row {
+    display: flex;
     align-items: center;
-    gap: calc(var(--card-w) * 0.12);
-    margin-bottom: var(--sp-xs);
+    gap: calc(var(--card-w) * 0.15);
 }
 
 #move-counter {
@@ -121,32 +126,40 @@ h1 {
 
 #new-game-btn,
 #play-again-btn,
-#undo-btn,
 #help-btn {
     font-family: "Silkscreen", monospace;
     font-size: var(--fs-sm);
-    padding: calc(var(--card-w) * 0.07) calc(var(--card-w) * 0.14);
-    background: var(--card-face);
-    color: var(--black);
-    border: 2px solid var(--black);
-    box-shadow: 2px 2px 0 var(--shadow);
+    color: var(--bg);
+    background: var(--text-secondary);
+    border: none;
+    padding: calc(var(--card-w) * 0.01) calc(var(--card-w) * 0.12);
+    letter-spacing: 1px;
     cursor: pointer;
-    image-rendering: pixelated;
-    transition:
-        transform 0.05s,
-        box-shadow 0.05s;
+    border-radius: 6px;
+}
+
+#new-game-btn:hover,
+#play-again-btn:hover,
+#help-btn:hover {
+    background: #89b5d4;
 }
 
 #undo-btn {
-    font-family: sans-serif;
+    font-family: "Silkscreen", monospace;
+    font-size: var(--fs-sm);
+    color: var(--bg);
+    background: var(--text-secondary);
+    border: none;
+    padding: calc(var(--card-w) * 0.01) calc(var(--card-w) * 0.12);
+    letter-spacing: 1px;
+    cursor: pointer;
+    opacity: 0.6;
+    border-radius: 6px;
 }
 
-#new-game-btn:active,
-#play-again-btn:active,
-#undo-btn:active,
-#help-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--shadow);
+#undo-btn:hover {
+    opacity: 1;
+    background: #89b5d4;
 }
 
 /* ── Board layout ────────────────────────────────── */
@@ -839,10 +852,14 @@ h1 {
         font-size: 20px;
     }
 
+    #header-right {
+        padding-top: 0;
+    }
+
     #new-game-btn,
-    #undo-btn,
     #help-btn,
     #move-counter,
+    #undo-btn,
     #draw-toggle,
     #lazy-toggle {
         font-size: 12px;
@@ -886,7 +903,9 @@ button:focus-visible {
 
 /* ── Reduced motion ───────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
