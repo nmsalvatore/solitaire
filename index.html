@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Solitaire! by yess.lol</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,15 +15,15 @@
     <div id="header-left">
       <h1>Solitaire!</h1>
       <div id="header-toggles">
-        <div id="lazy-toggle" title="Single-click auto-move">
-          <span class="lazy-option" data-lazy="off">SISYPHUS</span>
+        <div id="lazy-toggle" role="radiogroup" aria-label="Play mode" title="Single-click auto-move">
+          <button class="lazy-option" data-lazy="off">SISYPHUS</button>
           <span class="draw-divider">|</span>
-          <span class="lazy-option" data-lazy="on">LAZY</span>
+          <button class="lazy-option" data-lazy="on">LAZY</button>
         </div>
-        <div id="draw-toggle" title="Switch draw mode">
-          <span class="draw-option" data-draw="1">DRAW 1</span>
+        <div id="draw-toggle" role="radiogroup" aria-label="Draw count" title="Switch draw mode">
+          <button class="draw-option" data-draw="1">DRAW 1</button>
           <span class="draw-divider">|</span>
-          <span class="draw-option" data-draw="3">DRAW 3</span>
+          <button class="draw-option" data-draw="3">DRAW 3</button>
         </div>
       </div>
     </div>
@@ -59,10 +59,10 @@
     </section>
   </main>
 
-  <div id="help-screen" hidden>
+  <div id="help-screen" role="dialog" aria-modal="true" aria-labelledby="help-title" hidden>
     <div id="help-box">
       <div id="help-title">HOW TO PLAY</div>
-      <button id="help-close-btn">✕</button>
+      <button id="help-close-btn" aria-label="Close">✕</button>
       <div id="help-counter"><span id="help-slide-num">1</span> / 7</div>
 
       <div id="help-slides-wrap">
@@ -159,23 +159,23 @@
       </div>
 
       <div id="help-dots">
-        <button class="help-dot active" data-dot="0"></button>
-        <button class="help-dot" data-dot="1"></button>
-        <button class="help-dot" data-dot="2"></button>
-        <button class="help-dot" data-dot="3"></button>
-        <button class="help-dot" data-dot="4"></button>
-        <button class="help-dot" data-dot="5"></button>
-        <button class="help-dot" data-dot="6"></button>
+        <button class="help-dot active" data-dot="0" aria-label="Go to slide 1"></button>
+        <button class="help-dot" data-dot="1" aria-label="Go to slide 2"></button>
+        <button class="help-dot" data-dot="2" aria-label="Go to slide 3"></button>
+        <button class="help-dot" data-dot="3" aria-label="Go to slide 4"></button>
+        <button class="help-dot" data-dot="4" aria-label="Go to slide 5"></button>
+        <button class="help-dot" data-dot="5" aria-label="Go to slide 6"></button>
+        <button class="help-dot" data-dot="6" aria-label="Go to slide 7"></button>
       </div>
 
       <div id="help-nav">
-        <button id="help-prev">&#x25C4;</button>
-        <button id="help-next">&#x25BA;</button>
+        <button id="help-prev" aria-label="Previous slide">&#x25C4;</button>
+        <button id="help-next" aria-label="Next slide">&#x25BA;</button>
       </div>
     </div>
   </div>
 
-  <div id="win-screen" hidden>
+  <div id="win-screen" role="dialog" aria-modal="true" aria-labelledby="win-title" hidden>
     <div id="win-box">
       <img src="favicon.svg" alt="Spade character" id="win-mascot">
       <div id="win-title">YOU WIN!</div>

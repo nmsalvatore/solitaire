@@ -59,8 +59,10 @@ body {
     font-family: "Silkscreen", monospace;
     color: var(--text);
     min-height: 100vh;
-    padding: var(--body-pad);
-    user-select: none;
+    padding: calc(var(--body-pad) + env(safe-area-inset-top))
+             calc(var(--body-pad) + env(safe-area-inset-right))
+             var(--body-pad)
+             calc(var(--body-pad) + env(safe-area-inset-left));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -73,6 +75,7 @@ header {
     justify-content: space-between;
     margin: calc(var(--card-w) * 0.5) 0;
     width: calc(7 * var(--card-w) + 6 * var(--grid-gap));
+    user-select: none;
 }
 
 h1 {
@@ -152,6 +155,7 @@ h1 {
     flex-direction: column;
     gap: calc(var(--card-w) * 0.16);
     width: calc(7 * var(--card-w) + 6 * var(--grid-gap));
+    user-select: none;
 }
 
 /* Both rows share the same 7-column grid so foundations
@@ -246,6 +250,17 @@ h1 {
     user-select: none;
     letter-spacing: 1px;
     white-space: nowrap;
+}
+
+.draw-option,
+.lazy-option {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 .lazy-option {
@@ -861,4 +876,23 @@ h1 {
     pointer-events: none;
     z-index: 9999;
     opacity: 0.85;
+}
+
+/* ── Focus styles ─────────────────────────────────── */
+button:focus-visible {
+    outline: 2px solid var(--highlight);
+    outline-offset: 2px;
+}
+
+.card:focus-visible {
+    outline: 3px solid var(--highlight);
+    outline-offset: -1px;
+}
+
+/* ── Reduced motion ───────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
 }
