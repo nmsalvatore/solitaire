@@ -12,31 +12,31 @@
 </head>
 <body>
   <header>
-      <div id="header-top">
-          <h1>Solitaire</h1>
-          <div id="header-buttons">
-              <button id="new-game-btn">RESTART</button>
-              <button id="help-btn" aria-label="Rules">HELP</button>
-          </div>
-      </div>
-      <div id="header-bottom">
-          <div id="header-toggles">
-            <div id="lazy-toggle" role="radiogroup" aria-label="Play mode" title="Single-click auto-move">
-              <button class="lazy-option" data-lazy="off">SISYPHUS</button>
-              <span class="draw-divider">|</span>
-              <button class="lazy-option" data-lazy="on">LAZY</button>
+        <div id="header-top">
+            <h1>Solitaire</h1>
+            <div id="header-buttons">
+                <button id="new-game-btn">RESTART</button>
+                <button id="help-btn" aria-label="Rules">HELP</button>
             </div>
-            <div id="draw-toggle" role="radiogroup" aria-label="Draw count" title="Switch draw mode">
-              <button class="draw-option" data-draw="1">DRAW 1</button>
-              <span class="draw-divider">|</span>
-              <button class="draw-option" data-draw="3">DRAW 3</button>
+        </div>
+        <div id="header-bottom">
+            <div class="row">
+                <div id="lazy-toggle" role="radiogroup" aria-label="Play mode" title="Single-click auto-move">
+                    <button class="lazy-option" data-lazy="off">SISYPHUS</button>
+                    <span class="draw-divider">|</span>
+                    <button class="lazy-option" data-lazy="on">LAZY</button>
+                </div>
+                <div id="move-counter">MOVES: 0</div>
             </div>
-          </div>
-          <div id="header-game-controls">
-            <div id="move-counter">MOVES: 0</div>
-            <button id="undo-btn" aria-label="Undo">↩ UNDO</button>
-          </div>
-      </div>
+            <div class="row">
+                <div id="draw-toggle" role="radiogroup" aria-label="Draw count" title="Switch draw mode">
+                    <button class="draw-option" data-draw="1">DRAW 1</button>
+                    <span class="draw-divider">|</span>
+                    <button class="draw-option" data-draw="3">DRAW 3</button>
+                </div>
+                <button id="undo-btn" aria-label="Undo">↩ UNDO</button>
+            </div>
+        </div>
   </header>
 
   <main id="board">

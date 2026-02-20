@@ -90,6 +90,18 @@ h1 {
     align-items: center;
 }
 
+#header-bottom {
+    flex-direction: column;
+    gap: 4px;
+}
+
+#header-bottom .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
 #header-toggles {
     display: flex;
     flex-direction: column;
@@ -124,10 +136,11 @@ h1 {
 
 #new-game-btn,
 #play-again-btn,
-#help-btn {
+#help-btn,
+#undo-btn {
     font-family: "Silkscreen", monospace;
     font-size: var(--fs-sm);
-    color: var(--card-face);
+    color: var(--text);
     background: var(--card-back-b);
     border: none;
     padding: calc(var(--card-w) * 0.01) calc(var(--card-w) * 0.12);
@@ -151,15 +164,8 @@ h1 {
 }
 
 #undo-btn {
-    font-family: "Silkscreen", monospace;
-    font-size: var(--fs-xs);
     color: var(--bg);
     background: var(--text-secondary);
-    border: none;
-    padding: calc(var(--card-w) * 0.01) calc(var(--card-w) * 0.12);
-    letter-spacing: 1px;
-    cursor: pointer;
-    border-radius: 6px;
 }
 
 #undo-btn:hover {
@@ -870,10 +876,6 @@ h1 {
     #draw-toggle,
     #lazy-toggle {
         font-size: 14px;
-    }
-
-    #undo-btn {
-        font-size: 10px;
     }
 
     #help-box {
