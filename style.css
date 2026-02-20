@@ -102,29 +102,10 @@ h1 {
     width: 100%;
 }
 
-#header-toggles {
-    display: flex;
-    flex-direction: column;
-    gap: calc(var(--card-w) * 0.04);
-}
-
 #header-buttons {
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-#header-game-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-}
-
-#move-row {
-    display: flex;
-    align-items: center;
-    gap: calc(var(--card-w) * 0.15);
 }
 
 #move-counter {
@@ -436,12 +417,6 @@ h1 {
         4px 4px;
     image-rendering: pixelated;
     cursor: default;
-}
-
-.card.face-down .rank-tl,
-.card.face-down .rank-br,
-.card.face-down .suit-center {
-    display: none;
 }
 
 /* Selected state */
@@ -857,10 +832,6 @@ h1 {
 
     h1 {
         font-size: 24px;
-    }
-
-    #header-right {
-        padding-top: 0;
     }
 
     #new-game-btn,
