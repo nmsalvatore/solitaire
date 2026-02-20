@@ -191,7 +191,7 @@ function renderGame(state, selection) {
 
     // ── Theme picker active dot
     const currentTheme = document.body.getAttribute('data-theme') || 'blue';
-    document.querySelectorAll('.theme-dot').forEach(el => {
+    document.querySelectorAll('.theme-option').forEach(el => {
         el.classList.toggle('active', el.dataset.theme === currentTheme);
     });
 

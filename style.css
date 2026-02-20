@@ -920,32 +920,56 @@ button:focus-visible {
     bottom: 16px;
     left: 16px;
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 0;
     z-index: 900;
 }
 
-.theme-dot {
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-radius: 4px;
-    padding: 0;
-    cursor: pointer;
-    box-sizing: border-box;
-    box-shadow: 2px 2px var(--shadow);
+#theme-picker.open {
+    gap: 2px;
 }
 
-.theme-dot[data-theme="blue"] {
-    background: #1a3a5c;
+.theme-option {
+    font-family: "Silkscreen", monospace;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    transition:
+        width 0.2s,
+        opacity 0.2s;
 }
-.theme-dot[data-theme="green"] {
-    background: #3d6b4a;
+
+.theme-option.active {
+    color: var(--text);
 }
-.theme-dot[data-theme="black"] {
-    background: #2a2a2a;
+
+.theme-option:not(.active) {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
 }
-.theme-dot.active {
-    border-color: var(--card-face);
+
+#theme-picker.open .theme-option:not(.active) {
+    width: auto;
+    opacity: 1;
+}
+
+.theme-divider {
+    font-family: "Silkscreen", monospace;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    margin: 0 8px;
+    display: none;
+}
+
+#theme-picker.open .theme-divider {
+    display: inline;
 }
 
 /* ── Green theme ──────────────────────────────────── */

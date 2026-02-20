@@ -819,18 +819,41 @@ document.getElementById('pass-toggle').addEventListener('click', (e) => {
 });
 
 // Theme picker
-document.getElementById('theme-picker').addEventListener('click', (e) => {
-  const dot = e.target.closest('.theme-dot');
-  if (!dot) return;
-  const theme = dot.dataset.theme;
-  if (theme === 'blue') {
-    document.body.removeAttribute('data-theme');
-  } else {
-    document.body.setAttribute('data-theme', theme);
-  }
-  storageSet('theme', theme);
-  redraw();
-});
+(function initThemePicker() {
+  const picker = document.getElementById('theme-picker');
+
+  picker.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dot = e.target.closest('.theme-option');
+    if (!dot) return;
+
+    if (!picker.classList.contains('open')) {
+      // Closed → open (don't change theme)
+      picker.classList.add('open');
+      return;
+    }
+
+    // Open → apply theme if non-active dot, then close
+    if (!dot.classList.contains('active')) {
+      const theme = dot.dataset.theme;
+      if (theme === 'blue') {
+        document.body.removeAttribute('data-theme');
+      } else {
+        document.body.setAttribute('data-theme', theme);
+      }
+      storageSet('theme', theme);
+      redraw();
+    }
+    picker.classList.remove('open');
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#theme-picker')) {
+      picker.classList.remove('open');
+    }
+  });
+}());
 
 // Lazy toggle
 document.getElementById('lazy-toggle').addEventListener('click', (e) => {
