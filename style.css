@@ -32,13 +32,13 @@
     --grid-gap: calc(var(--card-w) * 0.1);
     --body-pad: calc(var(--card-w) * 0.12);
 
-    /* Font sizes — game board (card-w relative) */
-    --fs-xs: calc(var(--card-w) * 0.12);
-    --fs-sm: calc(var(--card-w) * 0.15);
-    --fs-md: calc(var(--card-w) * 0.2);
-    --fs-lg: calc(var(--card-w) * 0.28);
-    --fs-icon: calc(var(--card-w) * 0.36);
-    --fs-suit: calc(var(--card-w) * 0.42);
+    /* Font sizes — game board (card-w relative, clamped for mobile readability) */
+    --fs-xs: clamp(10px, calc(var(--card-w) * 0.12), 12px);
+    --fs-sm: clamp(11px, calc(var(--card-w) * 0.15), 15px);
+    --fs-md: clamp(13px, calc(var(--card-w) * 0.2), 20px);
+    --fs-lg: clamp(16px, calc(var(--card-w) * 0.28), 28px);
+    --fs-icon: clamp(18px, calc(var(--card-w) * 0.36), 36px);
+    --fs-suit: clamp(20px, calc(var(--card-w) * 0.42), 42px);
 
     /* Font sizes — modals (Silkscreen 7px-base multiples) */
     --fs-modal-sm: 14px;
@@ -79,7 +79,8 @@ h1 {
     font-size: var(--fs-lg);
     color: var(--card-face);
     text-shadow: 2px 2px 0 var(--shadow);
-    margin-bottom: var(--sp-xs);
+    margin-bottom: var(--sp-sm);
+    line-height: 1;
 }
 
 #header-left {
@@ -105,7 +106,6 @@ h1 {
     display: flex;
     align-items: center;
     gap: calc(var(--card-w) * 0.12);
-    margin-top: 10px;
     margin-bottom: var(--sp-xs);
 }
 
@@ -823,6 +823,26 @@ h1 {
 }
 #win-box {
     animation: win-enter 0.25s ease-out both;
+}
+
+/* ── Mobile header readability ────────────────────── */
+@media (max-width: 520px) {
+    header {
+        margin: calc(var(--card-w) * 0.5) 0 calc(var(--card-w) * 0.8);
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    #new-game-btn,
+    #undo-btn,
+    #help-btn,
+    #move-counter,
+    #draw-toggle,
+    #lazy-toggle {
+        font-size: 12px;
+    }
 }
 
 /* ── Touch drag ghost ─────────────────────────────── */
