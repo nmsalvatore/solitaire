@@ -519,7 +519,7 @@ h1 {
 /* ── Help slider ─────────────────────────────────── */
 #help-counter {
     font-size: var(--fs-modal-sm);
-    color: var(--accent);
+    color: var(--text-muted);
     letter-spacing: 1px;
     margin-bottom: var(--sp-sm);
 }
