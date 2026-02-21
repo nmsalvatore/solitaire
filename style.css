@@ -800,6 +800,12 @@ h1 {
     gap: var(--sp-lg);
 }
 
+#confirm-mascot {
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+}
+
 #confirm-message {
     font-size: var(--fs-modal-lg);
     color: var(--black);
