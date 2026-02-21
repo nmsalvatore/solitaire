@@ -774,6 +774,73 @@ h1 {
     letter-spacing: 1px;
 }
 
+/* ── Confirm screen ─────────────────────────────── */
+#confirm-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#confirm-screen[hidden] {
+    display: none;
+}
+
+#confirm-box {
+    background: var(--card-face);
+    border: 3px solid var(--black);
+    box-shadow: 3px 3px 0 var(--shadow);
+    padding: var(--sp-xl) 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-lg);
+}
+
+#confirm-message {
+    font-size: var(--fs-modal-lg);
+    color: var(--black);
+    letter-spacing: 2px;
+}
+
+#confirm-buttons {
+    display: flex;
+    gap: var(--sp-md);
+}
+
+#confirm-yes,
+#confirm-no {
+    font-family: "Silkscreen", monospace;
+    font-size: var(--fs-modal-sm);
+    color: var(--text);
+    box-shadow: 2px 2px var(--shadow);
+    border: none;
+    padding: 6px 24px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#confirm-yes {
+    background: var(--card-back-a);
+}
+
+#confirm-yes:hover {
+    background: var(--card-back-b);
+}
+
+#confirm-no {
+    background: var(--text-secondary);
+    color: var(--bg);
+}
+
+#confirm-no:hover {
+    filter: brightness(1.2);
+}
+
 /* ── Animations ───────────────────────────────── */
 
 @keyframes shake {

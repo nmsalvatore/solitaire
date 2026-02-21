@@ -805,6 +805,37 @@ window.addEventListener('resize', () => {
   });
 });
 
+// ── Confirm dialog ────────────────────────────────
+let pendingAction = null;
+
+function showConfirm(onConfirm) {
+  pendingAction = onConfirm;
+  document.getElementById('confirm-screen').removeAttribute('hidden');
+}
+
+function hideConfirm() {
+  pendingAction = null;
+  document.getElementById('confirm-screen').setAttribute('hidden', '');
+}
+
+document.getElementById('confirm-yes').addEventListener('click', () => {
+  const action = pendingAction;
+  hideConfirm();
+  if (action) action();
+});
+
+document.getElementById('confirm-no').addEventListener('click', hideConfirm);
+
+document.getElementById('confirm-screen').addEventListener('click', (e) => {
+  if (e.target.id === 'confirm-screen') hideConfirm();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('confirm-screen').hasAttribute('hidden') && e.key === 'Escape') {
+    hideConfirm();
+  }
+});
+
 // Draw toggle
 document.getElementById('draw-toggle').addEventListener('click', (e) => {
   e.stopPropagation();
@@ -812,9 +843,16 @@ document.getElementById('draw-toggle').addEventListener('click', (e) => {
   if (!option) return;
   const next = parseInt(option.dataset.draw);
   if (next === Game.getDrawCount()) return;
-  Game.setDrawCount(next);
-  storageSet('drawCount', next);
-  startNewGame();
+  const apply = () => {
+    Game.setDrawCount(next);
+    storageSet('drawCount', next);
+    startNewGame();
+  };
+  if (Game.getMoveCount() > 0) {
+    showConfirm(apply);
+  } else {
+    apply();
+  }
 });
 
 // Pass limit toggle
@@ -825,9 +863,16 @@ document.getElementById('pass-toggle').addEventListener('click', (e) => {
   const next = parseInt(option.dataset.pass);
   const newLimit = next === 0 ? 0 : 2;
   if (newLimit === Game.getPassLimit()) return;
-  Game.setPassLimit(newLimit);
-  storageSet('passLimit', newLimit);
-  startNewGame();
+  const apply = () => {
+    Game.setPassLimit(newLimit);
+    storageSet('passLimit', newLimit);
+    startNewGame();
+  };
+  if (Game.getMoveCount() > 0) {
+    showConfirm(apply);
+  } else {
+    apply();
+  }
 });
 
 // Theme picker

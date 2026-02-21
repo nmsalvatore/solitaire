@@ -22,7 +22,7 @@
         <div id="header-top">
             <h1>Solitaire</h1>
             <div id="header-buttons">
-                <button id="new-game-btn">RESTART</button>
+                <button id="new-game-btn">NEW GAME</button>
                 <button id="help-btn" aria-label="Rules">HELP</button>
             </div>
         </div>
@@ -182,6 +182,16 @@
             <div id="win-title">YOU WIN!</div>
             <div id="win-moves"></div>
             <button id="play-again-btn">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <div id="confirm-screen" role="dialog" aria-modal="true" hidden>
+        <div id="confirm-box">
+            <div id="confirm-message">START A NEW GAME?</div>
+            <div id="confirm-buttons">
+                <button id="confirm-yes">YES</button>
+                <button id="confirm-no">NO</button>
+            </div>
         </div>
     </div>
 
