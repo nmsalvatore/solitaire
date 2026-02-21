@@ -56,6 +56,36 @@ function updateThemeColor(theme) {
   updateThemeColor(saved || 'blue');
 }());
 
+// ── Focus trap ───────────────────────────────────
+
+let activeTrap = null;
+let previousFocus = null;
+
+function trapFocus(modalEl, initialFocusEl) {
+  previousFocus = document.activeElement;
+  activeTrap = modalEl;
+  (initialFocusEl || modalEl).focus();
+}
+
+function releaseFocus() {
+  activeTrap = null;
+  if (previousFocus && previousFocus.focus) previousFocus.focus();
+  previousFocus = null;
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!activeTrap || e.key !== 'Tab') return;
+  const focusable = activeTrap.querySelectorAll('button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])');
+  if (focusable.length === 0) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey) {
+    if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+  } else {
+    if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
+
 // ── Helpers ───────────────────────────────────────
 
 function redraw() {
@@ -697,11 +727,14 @@ function autoCompleteStep() {
 
 function showWin() {
   document.getElementById('win-moves').textContent = `${Game.getMoveCount()} MOVES`;
-  document.getElementById('win-screen').removeAttribute('hidden');
+  const screen = document.getElementById('win-screen');
+  screen.removeAttribute('hidden');
+  trapFocus(screen, document.getElementById('play-again-btn'));
 }
 
 function hideWin() {
   document.getElementById('win-screen').setAttribute('hidden', '');
+  releaseFocus();
 }
 
 // ── Init ──────────────────────────────────────────
@@ -745,9 +778,13 @@ document.getElementById('win-screen').addEventListener('click', e => { if (e.tar
   function open() {
     goTo(0);
     screen.removeAttribute('hidden');
+    trapFocus(screen, document.getElementById('help-close-btn'));
   }
 
-  function close() { screen.setAttribute('hidden', ''); }
+  function close() {
+    screen.setAttribute('hidden', '');
+    releaseFocus();
+  }
 
   prevBtn.addEventListener('click', () => goTo(cur - 1));
   nextBtn.addEventListener('click', () => goTo(cur + 1));
@@ -818,12 +855,15 @@ let pendingAction = null;
 
 function showConfirm(onConfirm) {
   pendingAction = onConfirm;
-  document.getElementById('confirm-screen').removeAttribute('hidden');
+  const screen = document.getElementById('confirm-screen');
+  screen.removeAttribute('hidden');
+  trapFocus(screen, document.getElementById('confirm-no'));
 }
 
 function hideConfirm() {
   pendingAction = null;
   document.getElementById('confirm-screen').setAttribute('hidden', '');
+  releaseFocus();
 }
 
 document.getElementById('confirm-yes').addEventListener('click', () => {
