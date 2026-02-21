@@ -79,7 +79,7 @@
         <div id="help-box">
             <div id="help-title">HOW TO PLAY</div>
             <button id="help-close-btn" aria-label="Close">✕</button>
-            <div id="help-counter"><span id="help-slide-num">1</span> / 7</div>
+            <div id="help-counter"><span id="help-slide-num">1</span> / 6</div>
 
             <div id="help-slides-wrap">
                 <div id="help-slides">
@@ -93,7 +93,7 @@
                             <div class="mini-pile">♣</div>
                         </div>
                         <div class="slide-title">THE GOAL</div>
-                        <p class="slide-body">Get all 52 cards home to the 4 foundation piles. Build each suit up from Ace to King. Easy, right?</p>
+                        <p class="slide-body">Get all 52 cards home to the 4 foundation piles. Build each suit up from Ace to King. </p>
                     </div>
 
                     <!-- SLIDE 2: MOVING CARDS -->
@@ -104,22 +104,23 @@
                             <div class="mini-card red"><span class="mc-rank">8</span><span class="mc-suit">♥</span></div>
                         </div>
                         <div class="slide-title">MOVING CARDS</div>
-                        <p class="slide-body">Click a card to pick it up, then click where you want it to go. Drag &amp; drop works too if you're feeling fancy.</p>
+                        <p class="slide-body">Click a card to pick it up, then click where you want it to go. Activate <strong>LAZY MODE</strong> to send cards to their logical position with a single click. Don't if you're a <strong>SISYPHUS</strong>. Drag &amp; drop works too if you're feeling fancy.</p>
                     </div>
 
                     <!-- SLIDE 3: THE COLUMNS -->
                     <div class="help-slide">
                         <div class="slide-visual">
-                            <div class="slide-stack">
+                            <div class="slide-stack" style="margin-right: 16px;">
                                 <div class="mini-card black" style="top:0">  <span class="mc-rank">9</span><span class="mc-suit">♠</span></div>
                                 <div class="mini-card red"   style="top:18px"><span class="mc-rank">8</span><span class="mc-suit">♥</span></div>
                                 <div class="mini-card black" style="top:36px"><span class="mc-rank">7</span><span class="mc-suit">♠</span></div>
                             </div>
-                            <div class="slide-arrow">➡</div>
-                            <div class="mini-pile" style="font-size:13px;color:var(--text-secondary);">K</div>
+                            <div class="mini-pile" style="font-size:13px;color:var(--text-secondary);"></div>
+                            <div class="slide-arrow">⬅</div>
+                            <div class="mini-card red"><span class="mc-rank">K</span><span class="mc-suit">♥</span></div>
                         </div>
                         <div class="slide-title">THE COLUMNS</div>
-                        <p class="slide-body">Stack cards going down in rank, alternating red and black. Empty column? Only a King gets that throne.</p>
+                        <p class="slide-body">Stack cards going down in rank, alternating red and black. Empty columns are a feast only fit for a king.</p>
                     </div>
 
                     <!-- SLIDE 4: THE DRAW PILE -->
@@ -128,10 +129,9 @@
                             <div class="mini-card face-down-mini"></div>
                             <div class="slide-arrow">➡</div>
                             <div class="mini-card red"><span class="mc-rank">A</span><span class="mc-suit">♥</span></div>
-                            <div class="slide-arrow" style="font-size:22px;color:var(--text-secondary);">↺</div>
                         </div>
                         <div class="slide-title">THE DRAW PILE</div>
-                        <p class="slide-body">Click the stock to flip cards over. Run out? Click again to shuffle them back. Playing Draw 3? Choose wisely — you only get 3 passes.</p>
+                        <p class="slide-body">Click the stock pile to draw cards to the waste pile. You can choose to <strong>DRAW 1</strong> or <strong>DRAW 3</strong>, depending on your preference. <strong>DRAW 3</strong> also comes with the option to have <strong>UNLIMITED</strong> passes or <strong>3 PASSES</strong> through the pile.</p>
                     </div>
 
                     <!-- SLIDE 5: STACKS & SHORTCUTS -->
@@ -146,7 +146,7 @@
                             <div class="mini-card red"><span class="mc-rank">10</span><span class="mc-suit">♥</span></div>
                         </div>
                         <div class="slide-title">STACKS &amp; SHORTCUTS</div>
-                        <p class="slide-body">Click a card and everything stacked on top of it comes along for the ride. Double-click any card to send it straight to its foundation.</p>
+                        <p class="slide-body">Click a card and everything stacked on top of it comes along for the ride. You can drag stacks just as easily. If a card is eligible for a ride to its foundation pile, just double-click it to send it up.</p>
                     </div>
 
                     <!-- SLIDE 6: UNDO -->
@@ -155,15 +155,8 @@
                             <div class="mini-btn">↩ UNDO</div>
                         </div>
                         <div class="slide-title">UNDO</div>
-                        <p class="slide-body">Hit UNDO or ⌘Z to undo — keep pressing to rewind as far as you want.</p>
+                        <p class="slide-body">You can undo as far as you'd like. Just hit the UNDO button or use ⌘Z on your keyboard. Or don't, if you like pain.</p>
                     </div>
-
-                    <!-- SLIDE 7: GAME MODES -->
-                    <div class="help-slide">
-                        <div class="slide-title" style="margin-top:16px;">GAME MODES</div>
-                        <p class="slide-body"><strong>LAZY / SISYPHUS</strong> — in SISYPHUS you pick and place every card yourself. LAZY lets you just click a card and it moves automatically.<br><strong>DRAW 1 / DRAW 3</strong> — flip one card at a time, or three for a challenge. Switching starts a new game.</p>
-                    </div>
-
                 </div>
             </div>
 
@@ -174,7 +167,6 @@
                 <button class="help-dot" data-dot="3" aria-label="Go to slide 4"></button>
                 <button class="help-dot" data-dot="4" aria-label="Go to slide 5"></button>
                 <button class="help-dot" data-dot="5" aria-label="Go to slide 6"></button>
-                <button class="help-dot" data-dot="6" aria-label="Go to slide 7"></button>
             </div>
 
             <div id="help-nav">
