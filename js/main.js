@@ -712,12 +712,18 @@ function startNewGame() {
   redraw();
 }
 
-document.getElementById('new-game-btn').addEventListener('click', startNewGame);
+document.getElementById('new-game-btn').addEventListener('click', () => {
+  if (Game.getMoveCount() > 0) {
+    showConfirm(startNewGame);
+  } else {
+    startNewGame();
+  }
+});
 document.getElementById('play-again-btn').addEventListener('click', startNewGame);
 document.getElementById('win-screen').addEventListener('click', e => { if (e.target.id === 'win-screen') hideWin(); });
 
 (function HelpSlider() {
-  const TOTAL = 7;
+  const TOTAL = 6;
   let cur = 0;
   const screen   = document.getElementById('help-screen');
   const prevBtn  = document.getElementById('help-prev');
