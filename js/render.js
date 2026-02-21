@@ -175,33 +175,36 @@ function renderGame(state, selection) {
     });
 
     // ── Draw toggle label
-    const drawOptions = document.querySelectorAll('.draw-option');
+    const drawOptions = document.querySelectorAll(".draw-option");
     const currentDraw = String(Game.getDrawCount());
-    drawOptions.forEach(el => {
-        el.classList.toggle('active', el.dataset.draw === currentDraw);
+    drawOptions.forEach((el) => {
+        el.classList.toggle("active", el.dataset.draw === currentDraw);
     });
 
     // ── Lazy toggle label
     let lazyVal;
-    try { lazyVal = localStorage.getItem('lazyMode') === 'on' ? 'on' : 'off'; }
-    catch { lazyVal = 'off'; }
-    document.querySelectorAll('.lazy-option').forEach(el => {
-        el.classList.toggle('active', el.dataset.lazy === lazyVal);
+    try {
+        lazyVal = localStorage.getItem("lazyMode") === "on" ? "on" : "off";
+    } catch {
+        lazyVal = "off";
+    }
+    document.querySelectorAll(".lazy-option").forEach((el) => {
+        el.classList.toggle("active", el.dataset.lazy === lazyVal);
     });
 
     // ── Theme picker active dot
-    const currentTheme = document.body.getAttribute('data-theme') || 'blue';
-    document.querySelectorAll('.theme-option').forEach(el => {
-        el.classList.toggle('active', el.dataset.theme === currentTheme);
+    const currentTheme = document.body.getAttribute("data-theme") || "blue";
+    document.querySelectorAll(".theme-option").forEach((el) => {
+        el.classList.toggle("active", el.dataset.theme === currentTheme);
     });
 
     // ── Pass toggle visibility and active state
-    const passRow = document.getElementById('pass-row');
+    const passRow = document.getElementById("pass-row");
     if (passRow) {
-        passRow.style.display = Game.getDrawCount() === 3 ? '' : 'none';
+        passRow.style.display = Game.getDrawCount() === 3 ? "" : "none";
         const currentPass = String(Game.getPassLimit() === 0 ? 0 : 3);
-        document.querySelectorAll('.pass-option').forEach(el => {
-            el.classList.toggle('active', el.dataset.pass === currentPass);
+        document.querySelectorAll(".pass-option").forEach((el) => {
+            el.classList.toggle("active", el.dataset.pass === currentPass);
         });
     }
 }

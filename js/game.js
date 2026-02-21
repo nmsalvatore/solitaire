@@ -1,30 +1,30 @@
-'use strict';
+"use strict";
 
 // Card: { suit, rank, faceUp }
 // Suits: 'spades', 'hearts', 'diamonds', 'clubs'
 // Ranks: 1–13  (1=Ace, 11=J, 12=Q, 13=K)
 
-const SUITS = ['spades', 'hearts', 'diamonds', 'clubs'];
-const RED_SUITS = new Set(['hearts', 'diamonds']);
+const SUITS = ["spades", "hearts", "diamonds", "clubs"];
+const RED_SUITS = new Set(["hearts", "diamonds"]);
 
 // ── Deck ──────────────────────────────────────────
 
 function createDeck() {
-  const deck = [];
-  for (const suit of SUITS) {
-    for (let rank = 1; rank <= 13; rank++) {
-      deck.push({ suit, rank, faceUp: false });
+    const deck = [];
+    for (const suit of SUITS) {
+        for (let rank = 1; rank <= 13; rank++) {
+            deck.push({ suit, rank, faceUp: false });
+        }
     }
-  }
-  return deck;
+    return deck;
 }
 
 function shuffle(deck) {
-  for (let i = deck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
-  }
-  return deck;
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    return deck;
 }
 
 // ── State ─────────────────────────────────────────
@@ -38,310 +38,325 @@ let stockPass = 0;
 let passLimit = 0; // 0 = unlimited, 2 = 3-pass (2 recycles = 3 total passes)
 
 function saveSnapshot() {
-  history.push({ state: JSON.parse(JSON.stringify(state)), moveCount, stockPass });
-  if (history.length > HISTORY_LIMIT) history.shift();
+    history.push({
+        state: JSON.parse(JSON.stringify(state)),
+        moveCount,
+        stockPass,
+    });
+    if (history.length > HISTORY_LIMIT) history.shift();
 }
 
 function undo() {
-  const snapshot = history.pop();
-  if (snapshot) {
-    state = snapshot.state;
-    moveCount = snapshot.moveCount;
-    stockPass = snapshot.stockPass;
-    return true;
-  }
-  return false;
+    const snapshot = history.pop();
+    if (snapshot) {
+        state = snapshot.state;
+        moveCount = snapshot.moveCount;
+        stockPass = snapshot.stockPass;
+        return true;
+    }
+    return false;
 }
 
 function canUndo() {
-  return history.length > 0;
+    return history.length > 0;
 }
 
 function initGame() {
-  const deck = shuffle(createDeck());
-  const tableau = [[], [], [], [], [], [], []];
+    const deck = shuffle(createDeck());
+    const tableau = [[], [], [], [], [], [], []];
 
-  let idx = 0;
-  for (let col = 0; col < 7; col++) {
-    for (let row = 0; row <= col; row++) {
-      const card = deck[idx++];
-      card.faceUp = (row === col); // only top card face-up
-      tableau[col].push(card);
+    let idx = 0;
+    for (let col = 0; col < 7; col++) {
+        for (let row = 0; row <= col; row++) {
+            const card = deck[idx++];
+            card.faceUp = row === col; // only top card face-up
+            tableau[col].push(card);
+        }
     }
-  }
 
-  state = {
-    stock: deck.slice(idx).reverse(), // remaining cards, top of stack = last element
-    waste: [],
-    foundations: [[], [], [], []], // index matches SUITS order
-    tableau,
-  };
+    state = {
+        stock: deck.slice(idx).reverse(), // remaining cards, top of stack = last element
+        waste: [],
+        foundations: [[], [], [], []], // index matches SUITS order
+        tableau,
+    };
 
-  history = [];
-  moveCount = 0;
-  stockPass = 0;
+    history = [];
+    moveCount = 0;
+    stockPass = 0;
 
-  return state;
+    return state;
 }
 
 function getState() {
-  return state;
+    return state;
 }
 
 // ── Helpers ───────────────────────────────────────
 
 function isRed(card) {
-  return RED_SUITS.has(card.suit);
+    return RED_SUITS.has(card.suit);
 }
 
 function foundationIndex(suit) {
-  return SUITS.indexOf(suit);
+    return SUITS.indexOf(suit);
 }
 
 // ── Move validation ───────────────────────────────
 
 function canMoveToFoundation(card, foundationPile) {
-  if (foundationPile.length === 0) {
-    return card.rank === 1; // must be Ace
-  }
-  const top = foundationPile[foundationPile.length - 1];
-  return card.suit === top.suit && card.rank === top.rank + 1;
+    if (foundationPile.length === 0) {
+        return card.rank === 1; // must be Ace
+    }
+    const top = foundationPile[foundationPile.length - 1];
+    return card.suit === top.suit && card.rank === top.rank + 1;
 }
 
 function canMoveToTableau(card, targetCol) {
-  if (targetCol.length === 0) {
-    return card.rank === 13; // only King to empty column
-  }
-  const top = targetCol[targetCol.length - 1];
-  if (!top.faceUp) return false;
-  return isRed(card) !== isRed(top) && card.rank === top.rank - 1;
+    if (targetCol.length === 0) {
+        return card.rank === 13; // only King to empty column
+    }
+    const top = targetCol[targetCol.length - 1];
+    if (!top.faceUp) return false;
+    return isRed(card) !== isRed(top) && card.rank === top.rank - 1;
 }
 
 // ── Actions ───────────────────────────────────────
 
 function setDrawCount(n) {
-  drawCount = n;
+    drawCount = n;
 }
 
 function getDrawCount() {
-  return drawCount;
+    return drawCount;
 }
 
 function setPassLimit(n) {
-  passLimit = n;
+    passLimit = n;
 }
 
 function getPassLimit() {
-  return passLimit;
+    return passLimit;
 }
 
 function drawFromStock() {
-  if (state.stock.length === 0 && state.waste.length === 0) return false;
-  if (state.stock.length === 0) {
-    // In draw-3 with a pass limit, block recycling after limit is reached
-    if (drawCount === 3 && passLimit > 0 && stockPass >= passLimit) return false;
-    // Flip waste back to stock — not counted as a move
-    stockPass++;
-    state.stock = state.waste.reverse().map(c => ({ ...c, faceUp: false }));
-    state.waste = [];
-  } else {
-    moveCount++;
-    const toDraw = Math.min(drawCount, state.stock.length);
-    for (let i = 0; i < toDraw; i++) {
-      const card = state.stock.pop();
-      card.faceUp = true;
-      state.waste.push(card);
+    if (state.stock.length === 0 && state.waste.length === 0) return false;
+    if (state.stock.length === 0) {
+        // In draw-3 with a pass limit, block recycling after limit is reached
+        if (drawCount === 3 && passLimit > 0 && stockPass >= passLimit)
+            return false;
+        // Flip waste back to stock — not counted as a move
+        stockPass++;
+        state.stock = state.waste
+            .reverse()
+            .map((c) => ({ ...c, faceUp: false }));
+        state.waste = [];
+    } else {
+        moveCount++;
+        const toDraw = Math.min(drawCount, state.stock.length);
+        for (let i = 0; i < toDraw; i++) {
+            const card = state.stock.pop();
+            card.faceUp = true;
+            state.waste.push(card);
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 // Move cards from source to tableau column
 // cards: array (may be a stack from tableau)
 // source: { type: 'waste'|'tableau'|'foundation', colIndex? }
 function moveToTableau(cards, targetColIndex, source) {
-  const targetCol = state.tableau[targetColIndex];
-  if (!canMoveToTableau(cards[0], targetCol)) return false;
-  if (!_isValidRun(cards)) return false;
-  if (!_isValidSource(cards, source)) return false;
+    const targetCol = state.tableau[targetColIndex];
+    if (!canMoveToTableau(cards[0], targetCol)) return false;
+    if (!_isValidRun(cards)) return false;
+    if (!_isValidSource(cards, source)) return false;
 
-  moveCount++;
-  _removeFromSource(cards, source);
-  for (const card of cards) {
-    targetCol.push(card);
-  }
-  _flipTopIfNeeded(source);
-  return true;
+    moveCount++;
+    _removeFromSource(cards, source);
+    for (const card of cards) {
+        targetCol.push(card);
+    }
+    _flipTopIfNeeded(source);
+    return true;
 }
 
 function moveToFoundation(card, source, options) {
-  const fi = foundationIndex(card.suit);
-  if (!canMoveToFoundation(card, state.foundations[fi])) return false;
-  if (!_isValidSource([card], source)) return false;
+    const fi = foundationIndex(card.suit);
+    if (!canMoveToFoundation(card, state.foundations[fi])) return false;
+    if (!_isValidSource([card], source)) return false;
 
-  if (!options || !options.skipCount) moveCount++;
-  _removeFromSource([card], source);
-  state.foundations[fi].push(card);
-  card._landAnim = true;
-  _flipTopIfNeeded(source);
-  return true;
+    if (!options || !options.skipCount) moveCount++;
+    _removeFromSource([card], source);
+    state.foundations[fi].push(card);
+    card._landAnim = true;
+    _flipTopIfNeeded(source);
+    return true;
 }
 
 // ── Internal helpers ──────────────────────────────
 
 function _isValidRun(cards) {
-  for (let i = 0; i < cards.length; i++) {
-    if (!cards[i].faceUp) return false;
-    if (i === 0) continue;
-    const prev = cards[i - 1];
-    const curr = cards[i];
-    if (isRed(prev) === isRed(curr)) return false;
-    if (curr.rank !== prev.rank - 1) return false;
-  }
-  return true;
+    for (let i = 0; i < cards.length; i++) {
+        if (!cards[i].faceUp) return false;
+        if (i === 0) continue;
+        const prev = cards[i - 1];
+        const curr = cards[i];
+        if (isRed(prev) === isRed(curr)) return false;
+        if (curr.rank !== prev.rank - 1) return false;
+    }
+    return true;
 }
 
 function _isValidSource(cards, source) {
-  if (source.type === 'waste') {
-    const w = state.waste;
-    return cards.length === 1 && w.length > 0 && w[w.length - 1] === cards[0];
-  } else if (source.type === 'tableau') {
-    const col = state.tableau[source.colIndex];
-    const start = col.length - cards.length;
-    if (start < 0) return false;
-    for (let i = 0; i < cards.length; i++) {
-      if (col[start + i] !== cards[i]) return false;
+    if (source.type === "waste") {
+        const w = state.waste;
+        return (
+            cards.length === 1 && w.length > 0 && w[w.length - 1] === cards[0]
+        );
+    } else if (source.type === "tableau") {
+        const col = state.tableau[source.colIndex];
+        const start = col.length - cards.length;
+        if (start < 0) return false;
+        for (let i = 0; i < cards.length; i++) {
+            if (col[start + i] !== cards[i]) return false;
+        }
+        return true;
+    } else if (source.type === "foundation") {
+        const fi = foundationIndex(cards[0].suit);
+        const f = state.foundations[fi];
+        return (
+            cards.length === 1 && f.length > 0 && f[f.length - 1] === cards[0]
+        );
     }
-    return true;
-  } else if (source.type === 'foundation') {
-    const fi = foundationIndex(cards[0].suit);
-    const f = state.foundations[fi];
-    return cards.length === 1 && f.length > 0 && f[f.length - 1] === cards[0];
-  }
-  return false;
+    return false;
 }
 
 function _removeFromSource(cards, source) {
-  if (source.type === 'waste') {
-    // cards is always [topOfWaste]
-    state.waste.pop();
-  } else if (source.type === 'tableau') {
-    const col = state.tableau[source.colIndex];
-    col.splice(col.length - cards.length, cards.length);
-  } else if (source.type === 'foundation') {
-    const fi = foundationIndex(cards[0].suit);
-    state.foundations[fi].pop();
-  }
+    if (source.type === "waste") {
+        // cards is always [topOfWaste]
+        state.waste.pop();
+    } else if (source.type === "tableau") {
+        const col = state.tableau[source.colIndex];
+        col.splice(col.length - cards.length, cards.length);
+    } else if (source.type === "foundation") {
+        const fi = foundationIndex(cards[0].suit);
+        state.foundations[fi].pop();
+    }
 }
 
 function _flipTopIfNeeded(source) {
-  if (source.type === 'tableau') {
-    const col = state.tableau[source.colIndex];
-    if (col.length > 0 && !col[col.length - 1].faceUp) {
-      col[col.length - 1].faceUp = true;
-      col[col.length - 1]._flipAnim = true;
+    if (source.type === "tableau") {
+        const col = state.tableau[source.colIndex];
+        if (col.length > 0 && !col[col.length - 1].faceUp) {
+            col[col.length - 1].faceUp = true;
+            col[col.length - 1]._flipAnim = true;
+        }
     }
-  }
 }
 
 // ── Lazy mode (find best move) ────────────────────
 
 function _isTopOfSource(card, source) {
-  if (source.type === 'waste') {
-    const w = state.waste;
-    return w.length > 0 && w[w.length - 1] === card;
-  } else if (source.type === 'tableau') {
-    const col = state.tableau[source.colIndex];
-    return col.length > 0 && col[col.length - 1] === card;
-  } else if (source.type === 'foundation') {
-    const fi = foundationIndex(card.suit);
-    const f = state.foundations[fi];
-    return f.length > 0 && f[f.length - 1] === card;
-  }
-  return false;
+    if (source.type === "waste") {
+        const w = state.waste;
+        return w.length > 0 && w[w.length - 1] === card;
+    } else if (source.type === "tableau") {
+        const col = state.tableau[source.colIndex];
+        return col.length > 0 && col[col.length - 1] === card;
+    } else if (source.type === "foundation") {
+        const fi = foundationIndex(card.suit);
+        const f = state.foundations[fi];
+        return f.length > 0 && f[f.length - 1] === card;
+    }
+    return false;
 }
 
 function findBestMove(card, source) {
-  // 1. Try foundation (single card only — card must be top of its source)
-  if (_isTopOfSource(card, source)) {
-    const fi = foundationIndex(card.suit);
-    if (canMoveToFoundation(card, state.foundations[fi])) {
-      return { type: 'foundation', suit: card.suit };
+    // 1. Try foundation (single card only — card must be top of its source)
+    if (_isTopOfSource(card, source)) {
+        const fi = foundationIndex(card.suit);
+        if (canMoveToFoundation(card, state.foundations[fi])) {
+            return { type: "foundation", suit: card.suit };
+        }
     }
-  }
 
-  // 2. Try non-empty tableau columns
-  for (let ci = 0; ci < 7; ci++) {
-    if (source.type === 'tableau' && source.colIndex === ci) continue;
-    const col = state.tableau[ci];
-    if (col.length > 0 && canMoveToTableau(card, col)) {
-      return { type: 'tableau', colIndex: ci };
+    // 2. Try non-empty tableau columns
+    for (let ci = 0; ci < 7; ci++) {
+        if (source.type === "tableau" && source.colIndex === ci) continue;
+        const col = state.tableau[ci];
+        if (col.length > 0 && canMoveToTableau(card, col)) {
+            return { type: "tableau", colIndex: ci };
+        }
     }
-  }
 
-  // 3. Try empty tableau columns (Kings only, avoid wasting slots)
-  for (let ci = 0; ci < 7; ci++) {
-    if (source.type === 'tableau' && source.colIndex === ci) continue;
-    const col = state.tableau[ci];
-    if (col.length === 0 && canMoveToTableau(card, col)) {
-      return { type: 'tableau', colIndex: ci };
+    // 3. Try empty tableau columns (Kings only, avoid wasting slots)
+    for (let ci = 0; ci < 7; ci++) {
+        if (source.type === "tableau" && source.colIndex === ci) continue;
+        const col = state.tableau[ci];
+        if (col.length === 0 && canMoveToTableau(card, col)) {
+            return { type: "tableau", colIndex: ci };
+        }
     }
-  }
 
-  return null;
+    return null;
 }
 
 // ── Win check ─────────────────────────────────────
 
 function canAutoComplete() {
-  if (state.stock.length > 0) return false;
-  if (state.waste.length > 0) return false;
-  return state.tableau.every(col => col.every(c => c.faceUp));
+    if (state.stock.length > 0) return false;
+    if (state.waste.length > 0) return false;
+    return state.tableau.every((col) => col.every((c) => c.faceUp));
 }
 
 function checkWin() {
-  return state.foundations.every(f => f.length === 13);
+    return state.foundations.every((f) => f.length === 13);
 }
 
 function consumeAnimations() {
-  const allCards = [
-    ...state.waste,
-    ...state.stock,
-    ...state.foundations.flat(),
-    ...state.tableau.flat(),
-  ];
-  for (const card of allCards) {
-    delete card._flipAnim;
-    delete card._landAnim;
-  }
+    const allCards = [
+        ...state.waste,
+        ...state.stock,
+        ...state.foundations.flat(),
+        ...state.tableau.flat(),
+    ];
+    for (const card of allCards) {
+        delete card._flipAnim;
+        delete card._landAnim;
+    }
 }
 
 // ── Exports (globals, no module system) ───────────
 // Attached to window so render.js / main.js can use them.
 
 window.Game = {
-  SUITS,
-  HISTORY_LIMIT,
-  initGame,
-  getState,
-  isRed,
-  foundationIndex,
-  canMoveToFoundation,
-  canMoveToTableau,
-  drawFromStock,
-  moveToTableau,
-  moveToFoundation,
-  getMoveCount() { return moveCount; },
-  getStockPass() { return stockPass; },
-  setDrawCount,
-  getDrawCount,
-  setPassLimit,
-  getPassLimit,
-  findBestMove,
-  canAutoComplete,
-  checkWin,
-  saveSnapshot,
-  undo,
-  canUndo,
-  consumeAnimations,
+    SUITS,
+    HISTORY_LIMIT,
+    initGame,
+    getState,
+    isRed,
+    foundationIndex,
+    canMoveToFoundation,
+    canMoveToTableau,
+    drawFromStock,
+    moveToTableau,
+    moveToFoundation,
+    getMoveCount() {
+        return moveCount;
+    },
+    getStockPass() {
+        return stockPass;
+    },
+    setDrawCount,
+    getDrawCount,
+    setPassLimit,
+    getPassLimit,
+    findBestMove,
+    canAutoComplete,
+    checkWin,
+    saveSnapshot,
+    undo,
+    canUndo,
+    consumeAnimations,
 };
