@@ -142,7 +142,7 @@ h1 {
 }
 
 #play-again-btn:hover {
-    background: var(--card-back-b);
+    filter: brightness(1.2);
 }
 
 #undo-btn {
@@ -837,7 +837,7 @@ h1 {
 }
 
 #confirm-yes:hover {
-    background: var(--card-back-b);
+    filter: brightness(1.2);
 }
 
 #confirm-no {
