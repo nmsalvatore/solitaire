@@ -714,6 +714,7 @@ function startNewGame() {
 
 document.getElementById('new-game-btn').addEventListener('click', startNewGame);
 document.getElementById('play-again-btn').addEventListener('click', startNewGame);
+document.getElementById('win-screen').addEventListener('click', e => { if (e.target.id === 'win-screen') hideWin(); });
 
 (function HelpSlider() {
   const TOTAL = 7;
