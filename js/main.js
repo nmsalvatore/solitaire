@@ -648,6 +648,8 @@ function autoMoveToFoundation(info) {
 
 // ── Auto-complete ─────────────────────────────────
 
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
 function runAutoComplete() {
   autoCompleting = true;
   clearSelection();
@@ -666,7 +668,7 @@ function autoCompleteStep() {
       Game.moveToFoundation(card, { type: 'waste' }, { skipCount: true });
       Render.renderGame(Game.getState(), null);
       Game.consumeAnimations();
-      setTimeout(autoCompleteStep, 80);
+      setTimeout(autoCompleteStep, prefersReducedMotion.matches ? 0 : 80);
       return;
     }
   }
@@ -681,7 +683,7 @@ function autoCompleteStep() {
       Game.moveToFoundation(card, { type: 'tableau', colIndex: ci }, { skipCount: true });
       Render.renderGame(Game.getState(), null);
       Game.consumeAnimations();
-      setTimeout(autoCompleteStep, 80);
+      setTimeout(autoCompleteStep, prefersReducedMotion.matches ? 0 : 80);
       return;
     }
   }
