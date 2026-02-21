@@ -35,7 +35,7 @@ const HISTORY_LIMIT = 300;
 let moveCount = 0;
 let drawCount = 1;
 let stockPass = 0;
-let passLimit = 2; // 0 = unlimited, 2 = 3-pass (2 recycles = 3 total passes)
+let passLimit = 0; // 0 = unlimited, 2 = 3-pass (2 recycles = 3 total passes)
 
 function saveSnapshot() {
   history.push({ state: JSON.parse(JSON.stringify(state)), moveCount, stockPass });

@@ -27,7 +27,7 @@ Game.setDrawCount(savedDraw === 3 ? 3 : 1);
 
 // ── Pass limit preference ────────────────────────
 const savedPass = storageGet('passLimit');
-Game.setPassLimit(savedPass === '0' ? 0 : 2);
+Game.setPassLimit(savedPass === '2' ? 2 : 0);
 
 // ── Touch state ───────────────────────────────────
 // null when idle; during a touch drag:
