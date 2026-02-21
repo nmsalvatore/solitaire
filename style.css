@@ -135,8 +135,10 @@ h1 {
 }
 
 #play-again-btn {
+    font-size: var(--fs-modal-sm);
     background: var(--card-back-a);
     color: white;
+    padding: 6px 24px;
 }
 
 #play-again-btn:hover {
