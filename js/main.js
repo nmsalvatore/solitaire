@@ -47,6 +47,11 @@ let touchState = null;
 // ── Auto-complete state ──────────────────────────
 let autoCompleting = false;
 
+// ── Stuck notification state ─────────────────────
+// Tracks whether we've already shown the banner for the current stuck state,
+// so it doesn't re-animate on every redraw while moves remain unavailable.
+let stuckNotified = false;
+
 // ── Lazy mode state ──────────────────────────────
 let lazyMode = storageGet("lazyMode") === "on";
 
@@ -114,6 +119,19 @@ function redraw() {
         "MOVES: " + Game.getMoveCount();
     if (!autoCompleting && Game.canAutoComplete()) {
         runAutoComplete();
+    }
+    if (!autoCompleting && !Game.checkWin()) {
+        if (!Game.hasAnyMove()) {
+            if (!stuckNotified) {
+                stuckNotified = true;
+                showStuck();
+            }
+        } else {
+            if (stuckNotified) {
+                stuckNotified = false;
+                hideStuck();
+            }
+        }
     }
 }
 
@@ -840,6 +858,18 @@ function autoCompleteStep() {
     if (Game.checkWin()) showWin();
 }
 
+// ── Stuck banner ──────────────────────────────────
+
+function showStuck() {
+    const banner = document.getElementById("stuck-banner");
+    document.getElementById("stuck-undo-btn").disabled = !Game.canUndo();
+    banner.removeAttribute("hidden");
+}
+
+function hideStuck() {
+    document.getElementById("stuck-banner").setAttribute("hidden", "");
+}
+
 // ── Win screen ────────────────────────────────────
 
 function showWin() {
@@ -859,8 +889,10 @@ function hideWin() {
 
 function startNewGame() {
     autoCompleting = false;
+    stuckNotified = false;
     clearSelection();
     hideWin();
+    hideStuck();
     Game.initGame();
     redraw();
 }
@@ -874,6 +906,19 @@ document.getElementById("new-game-btn").addEventListener("click", () => {
 });
 document
     .getElementById("play-again-btn")
+    .addEventListener("click", startNewGame);
+
+document.getElementById("stuck-undo-btn").addEventListener("click", () => {
+    if (Game.canUndo()) {
+        Game.undo();
+        stuckNotified = false;
+        clearSelection();
+        redraw();
+    }
+});
+
+document
+    .getElementById("stuck-new-game-btn")
     .addEventListener("click", startNewGame);
 document.getElementById("win-screen").addEventListener("click", (e) => {
     if (e.target.id === "win-screen") hideWin();

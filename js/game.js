@@ -302,6 +302,56 @@ function findBestMove(card, source) {
     return null;
 }
 
+// ── Stuck detection ───────────────────────────────
+
+// Returns true if at least one legal move exists.
+function hasAnyMove() {
+    // Can draw from stock?
+    if (state.stock.length > 0) return true;
+
+    // Can recycle waste back to stock?
+    if (state.waste.length > 0) {
+        const canRecycle = !(drawCount === 3 && passLimit > 0 && stockPass >= passLimit);
+        if (canRecycle) return true;
+    }
+
+    // Can waste top card move to foundation or tableau?
+    if (state.waste.length > 0) {
+        const card = state.waste[state.waste.length - 1];
+        const fi = foundationIndex(card.suit);
+        if (canMoveToFoundation(card, state.foundations[fi])) return true;
+        for (let ci = 0; ci < 7; ci++) {
+            if (canMoveToTableau(card, state.tableau[ci])) return true;
+        }
+    }
+
+    // Can any face-up card (or run) in tableau move somewhere?
+    for (let ci = 0; ci < 7; ci++) {
+        const col = state.tableau[ci];
+        // Find the start of the face-up run at the top of this column
+        let runStart = col.length;
+        for (let i = col.length - 1; i >= 0; i--) {
+            if (col[i].faceUp) runStart = i;
+            else break;
+        }
+        for (let i = runStart; i < col.length; i++) {
+            const card = col[i];
+            // Only the top card of a column can go to foundation
+            if (i === col.length - 1) {
+                const fi = foundationIndex(card.suit);
+                if (canMoveToFoundation(card, state.foundations[fi])) return true;
+            }
+            // Any card in the run can anchor a move to another tableau column
+            for (let cj = 0; cj < 7; cj++) {
+                if (ci === cj) continue;
+                if (canMoveToTableau(card, state.tableau[cj])) return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 // ── Win check ─────────────────────────────────────
 
 function canAutoComplete() {
@@ -353,6 +403,7 @@ window.Game = {
     setPassLimit,
     getPassLimit,
     findBestMove,
+    hasAnyMove,
     canAutoComplete,
     checkWin,
     saveSnapshot,

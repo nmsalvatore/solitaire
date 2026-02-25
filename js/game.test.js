@@ -1501,6 +1501,139 @@ test("default passLimit is unlimited (0)", () => {
     }
 });
 
+// ── hasAnyMove ────────────────────────────────────
+
+test("hasAnyMove returns true when stock has cards", () => {
+    const state = Game.initGame();
+    // Stock always has cards after initGame
+    assert(state.stock.length > 0, "stock should have cards");
+    assert(Game.hasAnyMove(), "should return true when stock is drawable");
+});
+
+test("hasAnyMove returns true when waste can be recycled (draw-1)", () => {
+    Game.setDrawCount(1);
+    const state = Game.initGame();
+    // Drain stock
+    while (state.stock.length > 0) Game.drawFromStock();
+    assertEqual(state.stock.length, 0, "stock should be empty");
+    assert(state.waste.length > 0, "waste should have cards");
+    assert(Game.hasAnyMove(), "should return true when waste can be recycled");
+    Game.setDrawCount(1);
+});
+
+test("hasAnyMove returns true when waste can be recycled (draw-3, unlimited)", () => {
+    Game.setDrawCount(3);
+    Game.setPassLimit(0);
+    const state = Game.initGame();
+    while (state.stock.length > 0) Game.drawFromStock();
+    assertEqual(state.stock.length, 0);
+    assert(state.waste.length > 0);
+    assert(Game.hasAnyMove(), "should return true with unlimited passes remaining");
+    Game.setDrawCount(1);
+    Game.setPassLimit(0);
+});
+
+test("hasAnyMove returns false when draw-3 pass limit is exhausted and board is stuck", () => {
+    Game.setDrawCount(3);
+    Game.setPassLimit(2);
+    const state = Game.initGame();
+    // Exhaust all passes
+    for (let pass = 0; pass < 3; pass++) {
+        while (state.stock.length > 0) Game.drawFromStock();
+        if (pass < 2) Game.drawFromStock(); // recycle
+    }
+    // Clear waste so no board moves exist
+    state.waste = [];
+    for (let i = 0; i < 7; i++) state.tableau[i] = [];
+    assertEqual(Game.hasAnyMove(), false, "should return false when pass limit hit and no board moves");
+    Game.setDrawCount(1);
+    Game.setPassLimit(0);
+});
+
+test("hasAnyMove returns true when waste top can move to foundation", () => {
+    const state = Game.initGame();
+    state.stock = [];
+    state.waste = [{ suit: "spades", rank: 1, faceUp: true }];
+    state.foundations[0] = [];
+    for (let i = 0; i < 7; i++) state.tableau[i] = [];
+    assert(Game.hasAnyMove(), "should return true when waste ace can go to empty foundation");
+});
+
+test("hasAnyMove returns true when waste top can move to tableau", () => {
+    const state = Game.initGame();
+    state.stock = [];
+    const blackJack = { suit: "spades", rank: 11, faceUp: true };
+    state.waste = [blackJack];
+    for (let i = 0; i < 7; i++) state.tableau[i] = [];
+    state.tableau[0] = [{ suit: "hearts", rank: 12, faceUp: true }];
+    assert(Game.hasAnyMove(), "should return true when waste top can go onto tableau");
+});
+
+test("hasAnyMove returns true when tableau top can move to foundation", () => {
+    const state = Game.initGame();
+    state.stock = [];
+    state.waste = [];
+    for (let i = 0; i < 7; i++) state.tableau[i] = [];
+    const ace = { suit: "clubs", rank: 1, faceUp: true };
+    state.tableau[3] = [ace];
+    state.foundations[3] = [];
+    assert(Game.hasAnyMove(), "should return true when tableau top card can go to foundation");
+});
+
+test("hasAnyMove returns true when tableau-to-tableau move exists", () => {
+    const state = Game.initGame();
+    state.stock = [];
+    state.waste = [];
+    for (let i = 0; i < 7; i++) state.tableau[i] = [];
+    state.tableau[0] = [{ suit: "hearts", rank: 12, faceUp: true }]; // red Queen
+    state.tableau[1] = [{ suit: "spades", rank: 13, faceUp: true }]; // black King
+    // Red Queen can go onto black King
+    assert(Game.hasAnyMove(), "should return true when tableau-to-tableau move exists");
+});
+
+test("hasAnyMove returns true when a buried face-up run can move to another column", () => {
+    const state = Game.initGame();
+    state.stock = [];
+    state.waste = [];
+    for (let i = 0; i < 7; i++) state.tableau[i] = [];
+    const faceDown = { suit: "clubs", rank: 9, faceUp: false };
+    const redQueen = { suit: "hearts", rank: 12, faceUp: true };
+    const blackJack = { suit: "spades", rank: 11, faceUp: true };
+    state.tableau[0] = [faceDown, redQueen, blackJack];
+    state.tableau[1] = [{ suit: "clubs", rank: 13, faceUp: true }]; // black King
+    // redQueen+blackJack run can move onto black King
+    assert(Game.hasAnyMove(), "should detect tableau run-to-tableau move");
+});
+
+test("hasAnyMove returns false when truly stuck (no stock, no valid moves)", () => {
+    const state = Game.initGame();
+    state.stock = [];
+    state.waste = [];
+    for (let i = 0; i < 7; i++) state.tableau[i] = [];
+    // All foundations complete — no moves possible from empty waste/tableau
+    ["spades", "hearts", "diamonds", "clubs"].forEach((suit, i) => {
+        state.foundations[i] = [];
+        for (let rank = 1; rank <= 13; rank++) {
+            state.foundations[i].push({ suit, rank, faceUp: true });
+        }
+    });
+    // checkWin would be true but hasAnyMove should still return false
+    assertEqual(Game.hasAnyMove(), false, "fully won game has no moves");
+});
+
+test("hasAnyMove returns false when stock/waste empty and only face-down cards in tableau", () => {
+    const state = Game.initGame();
+    state.stock = [];
+    state.waste = [];
+    for (let i = 0; i < 7; i++) state.tableau[i] = [];
+    // Only face-down cards, nothing movable
+    state.tableau[0] = [
+        { suit: "clubs", rank: 5, faceUp: false },
+        { suit: "hearts", rank: 3, faceUp: false },
+    ];
+    assertEqual(Game.hasAnyMove(), false, "no moves when only face-down tableau cards and no stock");
+});
+
 // ── Summary ───────────────────────────────────────
 
 window._testResults = { passed: _passed, failed: _failed };

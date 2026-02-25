@@ -1075,6 +1075,87 @@ body[data-theme="black"] {
     --drop-target: #3a3a2a;
 }
 
+/* ── Stuck banner ─────────────────────────────────── */
+#stuck-banner {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-face);
+    border: 3px solid var(--black);
+    box-shadow: 3px 3px 0 var(--shadow);
+    padding: 12px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    z-index: 500;
+    animation: toast-enter 0.25s ease-out both;
+    white-space: nowrap;
+}
+
+#stuck-banner[hidden] {
+    display: none;
+}
+
+#stuck-message {
+    font-family: "Silkscreen", monospace;
+    font-size: var(--fs-modal-sm);
+    color: var(--black);
+    letter-spacing: 2px;
+}
+
+#stuck-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+#stuck-undo-btn,
+#stuck-new-game-btn {
+    font-family: "Silkscreen", monospace;
+    font-size: var(--fs-modal-sm);
+    color: var(--text);
+    box-shadow: 2px 2px var(--shadow);
+    border: none;
+    padding: 6px 16px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#stuck-undo-btn {
+    background: var(--text-secondary);
+    color: var(--bg);
+}
+
+#stuck-undo-btn:hover:not(:disabled) {
+    filter: brightness(1.2);
+}
+
+#stuck-undo-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+#stuck-new-game-btn {
+    background: var(--card-back-a);
+}
+
+#stuck-new-game-btn:hover {
+    filter: brightness(1.2);
+}
+
+@keyframes toast-enter {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
